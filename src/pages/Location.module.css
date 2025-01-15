@@ -1,0 +1,33 @@
+/* Location.module.css */
+.location {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: #f4f4f4;
+}
+
+.location h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.location p {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.mapContainer {
+    width: 100%;
+    max-width: 900px; /* You can adjust this value */
+    height: 400px; /* Height of the map */
+    margin: 0 auto;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}

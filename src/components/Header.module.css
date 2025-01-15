@@ -1,0 +1,59 @@
+/* Header.module.css */
+.header {
+  display: grid;
+  grid-template-areas: "logo nav";
+  align-items: center;
+  padding: 10px 20px;
+  padding-left: 10px;
+  background-color: #1b1921;
+}
+
+.Logo {
+  grid-area: logo;
+  height: 50px; /* Adjust based on your logo dimensions */
+}
+
+.logoWithPhone {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between logo and phone number */
+}
+
+.phoneNumber {
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.phoneIcon {
+  font-size: 20px; /* Size of the phone icon */
+  margin-right: 5px; /* Space between icon and phone number */
+}
+
+.Nav {
+  grid-area: nav;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 60px;
+  width: 100%;
+}
+
+.Nav a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+.Nav button {
+  background-color: #ff5722;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.Nav button:hover {
+  background-color: #f84a16;
+}
