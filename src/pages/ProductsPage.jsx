@@ -5,24 +5,27 @@ export default function ProductsPage() {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [category, setCategory] = useState(""); // State for selected category
 
   useEffect(() => {
-    fetch("http://localhost:5000/menu")
-      .then((response) => {
+    const fetchMenu = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/get-menu${category ? `?category=${category}` : ""}`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch menu items.");
         }
-        return response.json();
-      })
-      .then((data) => {
+        const data = await response.json();
         setMenuItems(data);
         setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         setError(err.message);
         setLoading(false);
-      });
-  }, []);
+      }
+    };
+    fetchMenu();
+  }, [category]); // Re-fetch when category changes
 
   if (loading) {
     return <p className={classes.loading}>Loading...</p>;
@@ -35,12 +38,32 @@ export default function ProductsPage() {
   return (
     <div className={classes.container}>
       <h2>Product List</h2>
+      <div className={classes.filterContainer}>
+        <label htmlFor="category">Filter by category:</label>
+        <select
+          id="category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className={classes.categoryDropdown}
+        >
+          <option value="">All</option>
+          <option value="Salads">Salads</option>
+          <option value="Pizza">Pizza</option>
+          <option value="Pasta">Pasta</option>
+          {/* Add more options as needed */}
+        </select>
+      </div>
       {menuItems.length === 0 ? (
-        <p>The menu is currently empty.</p>
+        <p>No items available in this category.</p>
       ) : (
         <ul className={classes.menuList}>
           {menuItems.map((item) => (
             <li key={item._id} className={classes.menuItem}>
+              <img
+                src={item.image}  // Image URL here
+                alt={item.name}
+                className={classes.menuItemImage}
+              />
               <h3>{item.name}</h3>
               <p>{item.description}</p>
               <p>${item.price}</p>

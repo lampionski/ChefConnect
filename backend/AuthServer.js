@@ -12,18 +12,20 @@ const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const cookieParser = require("cookie-parser")
+const MenuItem = require("./Schemas/MenuItem.js")
 
 
-const menuRoutes = require('./routes/menuRoutes');
 
 // Other middleware
-app.use('/menu', menuRoutes);
 
 
 mongoose.connect(process.env.DB_CONNECTION_STRING);
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(cookieParser())
 
 app.post("/register", async (req, res) => {
@@ -90,13 +92,13 @@ app.post("/login", async (req, res) => {
     process.env.REFRESH_TOKEN_SECRET
   );
 
-  res.cookie("refToken", refreshToken, {httpOnly: true, sameSite: "strict"});
-  res.cookie("accessToken", accessToken, {httpOnly: true, sameSite: "strict"});
+  res.cookie("refToken", refreshToken, {httpOnly: true});
+  res.cookie("accessToken", accessToken, {httpOnly: true});
 
   res.sendStatus(200)
 });
 
-app.post("/user", gatherUserInfo, async (req, res) => {
+app.get("/user", gatherUserInfo, async (req, res) => {
   const user = {
     email: req.user.email,
     fullname: req.user.fullname,
@@ -120,8 +122,10 @@ app.post("get-user/:userId", async (req, res) => {
 });
 
 app.get('/get-menu', async (req, res) => {
+  const { category } = req.query; // Capture category from query params
   try {
-    const items = await MenuItem.find();
+    const filter = category ? { category } : {};
+    const items = await MenuItem.find(filter);
     res.json(items);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -130,12 +134,17 @@ app.get('/get-menu', async (req, res) => {
 
 // POST a new menu item
 app.post('/add-item', async (req, res) => {
-  const { name, description, price } = req.body;
+  const { name, description, price, category } = req.body; // Make sure category is included in the request
+
+  if (!category) {
+    return res.status(400).json({ message: "Category is required." }); // Check for category
+  }
 
   const newItem = new MenuItem({
     name,
     description,
     price,
+    category,  // Use category from request body
   });
 
   try {
@@ -145,6 +154,21 @@ app.post('/add-item', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+app.delete('/delete-item/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedItem = await MenuItem.findByIdAndDelete(id);
+    if (!deletedItem) {
+      return res.status(404).json({ message: "Menu item not found." });
+    }
+    res.status(200).json({ message: "Menu item deleted successfully." });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 
 // app.post(
 //   "/add-book",

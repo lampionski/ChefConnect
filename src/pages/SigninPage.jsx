@@ -20,11 +20,12 @@ const SigninPage = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:12345/api/register', {
+      const response = await fetch('http://localhost:3000/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ fullname: name, email, password }),
       });
+      console.log(response)
 
       const result = await response.json();
       if (response.status === 201) {
@@ -42,25 +43,16 @@ const SigninPage = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:12345/api/signin', {
+      const response = await fetch('http://localhost:3000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
-      const result = await response.json();
-
       if (response.status === 200) {
-        localStorage.setItem('token', result.token); // Save JWT token
-
+        navigate("/")
         // Redirect based on role
-        if (result.user.role === 'admin') {
-          navigate('/adminPanel'); // Redirect to admin panel
-        } else {
-          navigate('/'); // Redirect to home page
-        }
-      } else {
-        setError(result.error || 'Invalid credentials');
       }
     } catch (err) {
       setError("Server error: " + err.message);

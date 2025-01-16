@@ -13,6 +13,12 @@ const menuItemSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  category: { 
+    type: String,
+     required: true 
+    },
+
+    image: { type: String, required: true }, // New field to store image URL or path
 });
 
 module.exports = mongoose.model('MenuItem', menuItemSchema);
