@@ -98,6 +98,18 @@ app.post("/login", async (req, res) => {
   res.sendStatus(200)
 });
 
+app.post('/logout', (req, res) => {
+  res.clearCookie(
+    "refToken",  { httpOnly: true }
+  );
+
+  res.clearCookie(
+    "accessToken",  { httpOnly: true }
+  );
+
+  res.sendStatus(200);
+});
+
 app.get("/user", gatherUserInfo, async (req, res) => {
   const user = {
     email: req.user.email,

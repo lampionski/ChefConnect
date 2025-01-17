@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SigninPage.module.css";
+import UserCTX from '../context/UserContext';
 
 const SigninPage = () => {
   const [isLogin, setIsLogin] = useState(false); // Toggle between sign-in and sign-up
@@ -10,6 +11,8 @@ const SigninPage = () => {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const userData = useContext(UserCTX);
 
   // Handle Sign-Up
   const handleSignUp = async (e) => {
@@ -30,6 +33,7 @@ const SigninPage = () => {
       const result = await response.json();
       if (response.status === 201) {
         setIsLogin(true); // Redirect to login form after successful sign-up
+        userData.setUser({});
       } else {
         setError(result.error || 'Sign-up failed');
       }
@@ -49,6 +53,8 @@ const SigninPage = () => {
         credentials: "include",
         body: JSON.stringify({ email, password }),
       });
+
+      userData.setUser({});
 
       if (response.status === 200) {
         navigate("/")

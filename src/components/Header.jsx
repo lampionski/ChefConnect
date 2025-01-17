@@ -1,9 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png"; 
 import styles from "./Header.module.css"; 
 import { FaPhoneAlt } from 'react-icons/fa';  
+import { useContext } from "react";
+import UserCTX from "../context/UserContext";
 
 export default function Header() {
+  const userData = useContext(UserCTX);
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    await fetch('http://localhost:3000/logout', { method: 'POST', credentials: "include", });
+    userData.setUser(null);
+    navigate('/');
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles.logoWithPhone}>
@@ -18,7 +29,9 @@ export default function Header() {
         <Link to="/products">Menu</Link>
         <Link to="/">Reserve Table</Link>
         <Link to="/contact">Contact us</Link>
-        <Link to="/signin"><button>Sign up</button></Link>
+        {userData.user ? <>
+        <button onClick={logout}>Sign out</button>
+        </>: <Link to="/signin"><button>Sign up</button></Link>}
       </nav>
     </header>
   );

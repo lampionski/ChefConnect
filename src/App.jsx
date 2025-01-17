@@ -12,7 +12,7 @@ import { useContext, useState } from "react"
 
 function App() {
 
-  const [user, setUser] = useState({})
+  const [user, setUser] = useState(null)
 
  const router = createBrowserRouter([{path: "/", element: <RootLayout/>, loader: rootLoader, children:[{index: true, element: <HomePage/>},
     {path: "/products", element: <ProductsPage/>}, 

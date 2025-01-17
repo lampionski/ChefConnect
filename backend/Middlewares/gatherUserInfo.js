@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 
 async function gatherUserInfo(req, res, next) {
   const accessToken = jwt.decode(req.cookies["accessToken"]);
+  console.log(req.cookies)
   // if (false && accessToken.expire < Date.now())
   //   return res.status(400).send("Token expired");
   if (!accessToken?.uid) return res.status(400).send("Invalid token");

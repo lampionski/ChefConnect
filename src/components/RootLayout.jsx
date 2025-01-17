@@ -11,8 +11,9 @@ export default function RootLayout(){
   const userData = useContext(UserCTX)
 
   useEffect(()=>{
-    if()
-    userData.setUser(loaderData)
+    if(loaderData && userData.user == null){
+      userData.setUser(loaderData)
+    }
   },[loaderData])
 
     return <>
@@ -27,7 +28,8 @@ export default function RootLayout(){
 
 export async function loader(){try{
   const response = await fetch("http://localhost:3000/user", {credentials:"include"})
-  return response;
+  const user = await response.json();
+  return user;
 }catch{}
    return null
 }
