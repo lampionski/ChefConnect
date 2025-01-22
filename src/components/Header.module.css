@@ -57,3 +57,81 @@
 .Nav button:hover {
   background-color: #f84a16;
 }
+
+/* New styles for burger menu */
+.burgerMenu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.menuIcon {
+  font-size: 24px; /* Size of the burger icon */
+  color: white;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 10px; /* Increased border-radius for a smoother look */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow for visibility */
+  z-index: 1000;
+  width: 200px; /* Increased width for a larger menu */
+  padding: 10px 0; /* Added padding for more space inside the menu */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Ensure buttons span full width */
+}
+
+/* Fix profile button alignment and hover effect */
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Ensure items span full menu width */
+  padding: 15px 20px; /* Increased padding for larger menu items */
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: transparent; /* Removed background for profile button */
+  border: none; /* Reset button styles */
+  box-sizing: border-box; /* Ensure padding and borders are included in width/height */
+}
+
+.menuItem:hover {
+  background-color: #444;
+}
+
+.menuItem svg {
+  margin-right: 10px; /* Space between icon and text */
+}
+
+/* Fix for profile button */
+.menuItem.profile {
+  padding: 15px 20px; /* Ensures consistent padding */
+  text-align: center; /* Ensures text is centered */
+  background-color: transparent; /* Ensure no background color */
+  border-radius: 5px; /* Rounded corners for a smooth look */
+}
+
+.menuItem.profile:hover {
+  background-color: #444; /* Same hover effect as other buttons */
+}
+
+/* Specific styles for sign-out button */
+.menuItem.signOut {
+  background-color: #ff5722; /* Orange background for sign-out button */
+  color: white;
+  border-radius: 5px;
+  width: calc(100% - 20px); /* Ensure it fits within the menu */
+  margin: 0 auto;
+}
+
+.menuItem.signOut:hover {
+  background-color: #f84a16;
+}

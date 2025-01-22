@@ -3,10 +3,12 @@ import classes from "./ProductsPage.module.css";
 
 export default function ProductsPage() {
   const [menuItems, setMenuItems] = useState([]);
+  const [categories, setCategories] = useState([]); // State for categories
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [category, setCategory] = useState(""); // State for selected category
 
+  // Fetch menu items
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -26,6 +28,23 @@ export default function ProductsPage() {
     };
     fetchMenu();
   }, [category]); // Re-fetch when category changes
+
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/get-categories");
+        if (!response.ok) {
+          throw new Error("Failed to fetch categories.");
+        }
+        const data = await response.json();
+        setCategories(data);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   if (loading) {
     return <p className={classes.loading}>Loading...</p>;
@@ -47,10 +66,11 @@ export default function ProductsPage() {
           className={classes.categoryDropdown}
         >
           <option value="">All</option>
-          <option value="Salads">Salads</option>
-          <option value="Pizza">Pizza</option>
-          <option value="Pasta">Pasta</option>
-          {/* Add more options as needed */}
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
         </select>
       </div>
       {menuItems.length === 0 ? (
@@ -60,7 +80,7 @@ export default function ProductsPage() {
           {menuItems.map((item) => (
             <li key={item._id} className={classes.menuItem}>
               <img
-                src={item.image}  // Image URL here
+                src={item.image} // Image URL here
                 alt={item.name}
                 className={classes.menuItemImage}
               />

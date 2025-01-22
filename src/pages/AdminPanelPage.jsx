@@ -1,16 +1,34 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./AdminPanel.module.css";
 
 const AdminDashboard = ({ handleLogout }) => {
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      await fetch("http://localhost:3000/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      navigate("/");
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  };
+
   return (
-    <div className="admin-dashboard">
+    <div className={styles.adminDashboard}>
       <h2>Welcome to the Admin Dashboard</h2>
-      <div className="dashboard-options">
-        <button onClick={() => alert("Manage Menu clicked")}>Manage Menu</button>
-        <button onClick={() => alert("View Profits clicked")}>View Profits</button>
-        <button onClick={() => alert("Manage Workers clicked")}>Manage Workers</button>
-        <button onClick={() => alert("Manage Reservations clicked")}>Manage Reservations</button>
+      <div className={styles.dashboardOptions}>
+        <button onClick={() => navigate("/manage-menu")}>Manage Menu</button>
+        <button onClick={() => navigate("/admin/reservations")}>
+          Manage Reservations
+        </button>
+        <button onClick={logout} className={styles.logout}>
+          Logout
+        </button>
       </div>
-      <button onClick={handleLogout}>Logout</button>
     </div>
   );
 };

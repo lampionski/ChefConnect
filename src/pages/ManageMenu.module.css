@@ -1,0 +1,33 @@
+.container {
+    padding: 20px;
+  }
+  
+  .addItemForm {
+    margin-bottom: 20px;
+  }
+  
+  .addItemForm input, .addItemForm textarea {
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 8px;
+  }
+  
+  .menuList {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .menuItem {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .menuItem img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+  
