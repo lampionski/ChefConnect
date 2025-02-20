@@ -5,10 +5,10 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
+const gatherUserInfo = require("./Middlewares/gatherUserInfo")
 
 const UserSchema = require("./Schemas/UserSchema");
 const MenuItem = require("./Schemas/MenuItem");
-const gatherUserInfo = require("./Middlewares/gatherUserInfo.js");
 
 const app = express();
 
@@ -19,12 +19,83 @@ const categories = ["Salad", "Pizza", "Pasta", "Seafood", "Desserts", "Drinks"];
 mongoose.connect(process.env.DB_CONNECTION_STRING, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch((err) => console.error('MongoDB connection error:', err));
 
 // Middleware
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(cookieParser());
+
+// Get user profile
+app.get("/user-profile", gatherUserInfo, async (req, res) => {
+  try {
+    const user = await UserSchema.findById(req.user._id)
+      .select("-password") // Exclude password from the response
+      .lean(); // Convert to plain JavaScript object
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Send all user data except password
+    res.json({
+      fullname: user.fullname,
+      email: user.email,
+      username: user.username || user.fullname, // Use fullname as fallback
+      birthDate: user.birthDate || "",
+      photo: user.photo || "",
+      address: user.address || "",
+      phoneNumber: user.phoneNumber || "",
+      role: user.role
+    });
+  } catch (err) {
+    console.error("Error fetching user profile:", err.message);
+    res.status(500).json({ message: "Failed to fetch user profile." });
+  }
+});
+
+// Update user profile
+app.post("/update-profile", gatherUserInfo, async (req, res) => {
+  try {
+    const { username, birthDate, address, phoneNumber, photo } = req.body;
+    const updatedUser = await UserSchema.findByIdAndUpdate(
+      req.user._id,
+      { username, birthDate, address, phoneNumber, photo },
+      { new: true }
+    ).select("-password");
+    res.json(updatedUser);
+  } catch (err) {
+    console.error("Error updating user profile:", err.message);
+    res.status(500).json({ message: "Failed to update user profile." });
+  }
+});
+
+// Change password
+app.post("/change-password", gatherUserInfo, async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await UserSchema.findByIdAndUpdate(req.user._id, { password: hashedPassword });
+    res.json({ message: "Password updated successfully." });
+  } catch (err) {
+    console.error("Error changing password:", err.message);
+    res.status(500).json({ message: "Failed to change password." });
+  }
+});
+
+app.get("/user", gatherUserInfo, async (req, res) => {
+  const user = {
+    email: req.user.email,
+    fullname: req.user.fullname,
+    letter: req.user.letter,
+    class: req.user.class,
+    classNumber: req.user.classNumber,
+    role: req.user.role,
+  };
+  res.json(user);
+});
 
 // User Registration
 app.post("/register", async (req, res) => {
@@ -43,15 +114,16 @@ app.post("/register", async (req, res) => {
     return res.status(400).json({ message: "Password must be at least 8 characters." });
   }
 
-  if (await UserSchema.findOne({ email })) {
-    return res.status(400).json({ message: "Email already in use." });
-  }
-
   try {
+    const existingUser = await UserSchema.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already in use." });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new UserSchema({ email, password: hashedPassword, fullname });
     await newUser.save();
-    res.sendStatus(200);
+    res.status(201).json({ message: "User registered successfully." });
   } catch (err) {
     console.error("Error during registration:", err.message);
     res.status(500).json({ message: "Failed to register user." });
@@ -66,27 +138,50 @@ app.post("/login", async (req, res) => {
     return res.status(400).json({ message: "Missing email or password." });
   }
 
-  const fetchedUser = await UserSchema.findOne({ email });
+  try {
+    const fetchedUser = await UserSchema.findOne({ email });
 
-  if (!fetchedUser || !(await bcrypt.compare(password, fetchedUser.password))) {
-    return res.status(400).json({ message: "Invalid credentials." });
+    if (!fetchedUser || !(await bcrypt.compare(password, fetchedUser.password))) {
+      return res.status(400).json({ message: "Invalid credentials." });
+    }
+
+    const accessToken = jwt.sign(
+      { uid: fetchedUser._id.toString() },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    const refreshToken = jwt.sign(
+      { uid: fetchedUser._id.toString() },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "10d" }
+    );
+
+    res.cookie("accessToken", accessToken, { httpOnly: true });
+    res.cookie("refToken", refreshToken, { httpOnly: true });
+    res.status(200).json({ message: "Login successful." });
+  } catch (err) {
+    console.error("Error during login:", err.message);
+    res.status(500).json({ message: "Failed to log in." });
   }
+});
 
-  const accessToken = jwt.sign(
-    { uid: fetchedUser._id.toString() },
-    process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "15m" }
-  );
+//log out 
+app.get('/logout', async (req, res) => {
+  const reftoken = req.cookies['refToken'];
+  console.log(reftoken)
 
-  const refreshToken = jwt.sign(
-    { uid: fetchedUser._id.toString() },
-    process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: "10d" }
-  );
-
-  res.cookie("accessToken", accessToken, { httpOnly: true });
-  res.cookie("refToken", refreshToken, { httpOnly: true });
-  res.sendStatus(200);
+  if (reftoken) {
+    res.clearCookie('refToken', {
+      httpOnly: true
+    });
+    res.clearCookie('accessToken',{
+      httpOnly: true
+    });
+    res.status(200).json({ message: "Logged out successfully." });
+  } else {
+    res.status(400).json({ message: "No refresh token found." });
+  }
 });
 
 // Get Categories

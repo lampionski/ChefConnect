@@ -1,79 +1,64 @@
-// HomePage.jsx
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './HomePage.module.css';
-import photo1 from '../assets/images/img1Car.jpg'; // Hero Image
-import AboutUs from './AboutUs'; // Import AboutUs section
-import PhotoGallery from './PhotoGallery'; // Import PhotoGallery section
-import Location from './Location'; // Import Location section
+"use client"
+
+import { useState, useEffect, useContext } from "react"
+import { useNavigate } from "react-router-dom"
+import styles from "./HomePage.module.css"
+import photo1 from "../assets/images/img1Car.jpg"
+import AboutUs from "./AboutUs"
+import PhotoGallery from "./PhotoGallery"
+import Location from "./Location"
+import UserCTX from "../context/UserContext"
 
 export function HomePage() {
-    const navigate = useNavigate();
-    const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate()
+  const { language } = useContext(UserCTX)
+  const [isVisible, setIsVisible] = useState(false)
 
-    // Show Scroll to Top button when scrolling down
-    useEffect(() => {
-        const toggleVisibility = () => {
-            if (window.scrollY > 300) {
-                setIsVisible(true);
-            } else {
-                setIsVisible(false);
-            }
-        };
+  useEffect(() => {
+    const toggleVisibility = () => {
+      setIsVisible(window.scrollY > 300)
+    }
+    window.addEventListener("scroll", toggleVisibility)
+    return () => window.removeEventListener("scroll", toggleVisibility)
+  }, [])
 
-        window.addEventListener('scroll', toggleVisibility);
-        return () => window.removeEventListener('scroll', toggleVisibility);
-    }, []);
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
 
-    const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-        });
-    };
-
-    return (
-        <div className={styles.homepage}>
-            {/* Static Hero Section */}
-            <header className={styles.hero}>
-                <img src={photo1} alt="Hero" className={styles.heroImage} />
-                <div className={styles.overlay}>
-                    <h1>Welcome to ChefConnect</h1>
-                    <p>Experience culinary excellence in every bite.</p>
-                    <button
-                        className={styles.menuButton}
-                        onClick={() => navigate('/products')}
-                    >
-                        Go to Menu
-                    </button>
-                </div>
-            </header>
-
-            {/* About Us Section */}
-            <AboutUs />
-
-            {/* Photo Gallery Section */}
-            <PhotoGallery />
-
-            {/* Location Section */}
-            <Location />
-
-            {/* Scroll to Top Button */}
-            {isVisible && (
-                <button
-                    className={styles.scrollToTop}
-                    onClick={scrollToTop}
-                >
-                    ↑
-                </button>
-            )}
-
-            {/* Footer Section */}
-            <footer className={styles.footer}>
-                <p>© 2024 ChefConnect. All Rights Reserved.</p>
-            </footer>
+  return (
+    <div className={styles.homepage}>
+      <header className={styles.hero}>
+        <img src={photo1 || "/placeholder.svg"} alt="Hero" className={styles.heroImage} />
+        <div className={styles.overlay}>
+          <h1>{language === "en" ? "Welcome to ChefConnect" : "Добре дошли в ChefConnect"}</h1>
+          <p>
+            {language === "en"
+              ? "Experience culinary excellence in every bite."
+              : "Изживейте кулинарното съвършенство във всяка хапка."}
+          </p>
+          <button className={styles.menuButton} onClick={() => navigate("/products")}>
+            {language === "en" ? "Go to Menu" : "Към Менюто"}
+          </button>
         </div>
-    );
+      </header>
+
+      <AboutUs />
+      <PhotoGallery />
+      <Location />
+
+      {isVisible && (
+        <button className={styles.scrollToTop} onClick={scrollToTop} aria-label="Scroll to top">
+          ↑
+        </button>
+      )}
+
+      <footer className={styles.footer}>
+        <p>© 2024 ChefConnect. {language === "en" ? "All Rights Reserved." : "Всички права запазени."}</p>
+      </footer>
+    </div>
+  )
 }
 
-export default HomePage;
+export default HomePage
+

@@ -1,348 +1,157 @@
-import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./SigninPage.module.css";
-import UserCTX from '../context/UserContext';
+"use client"
+
+import { useContext, useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import styles from "./SigninPage.module.css"
+import UserCTX from "../context/UserContext"
+import { FaEnvelope, FaLock, FaUser } from "react-icons/fa"
 
 const SigninPage = () => {
-  const [isLogin, setIsLogin] = useState(false); // Toggle between sign-in and sign-up
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [repeatPassword, setRepeatPassword] = useState('');
-  const [name, setName] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [repeatPassword, setRepeatPassword] = useState("")
+  const [name, setName] = useState("")
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const navigate = useNavigate()
 
-  const userData = useContext(UserCTX);
+  const userData = useContext(UserCTX)
 
-  // Handle Sign-Up
+  useEffect(() => {
+    setError("")
+    setSuccess("")
+  }, [])
+
   const handleSignUp = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (password !== repeatPassword) {
-      setError("Passwords do not match");
-      return;
+      setError("Passwords do not match")
+      return
     }
 
     try {
-      const response = await fetch('http://localhost:3000/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fullname: name, email, password }),
-      });
-      console.log(response)
+      })
 
-      const result = await response.json();
+      const result = await response.json()
       if (response.status === 201) {
-        setIsLogin(true); // Redirect to login form after successful sign-up
-        userData.setUser({});
+        setSuccess("Sign-up successful! Please log in.")
+        setIsLogin(true)
+        userData.setUser({})
       } else {
-        setError(result.error || 'Sign-up failed');
+        setError(result.error || "Sign-up failed")
       }
     } catch (err) {
-      setError("Server error: " + err.message);
+      setError("Server error: " + err.message)
     }
-  };
+  }
 
-  // Handle Sign-In
   const handleSignIn = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
-      const response = await fetch('http://localhost:3000/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ email, password }),
-      });
-
-      userData.setUser({});
+      })
 
       if (response.status === 200) {
+        userData.setUser({})
         navigate("/")
-        // Redirect based on role
+      } else {
+        const result = await response.json()
+        setError(result.error || "Sign-in failed")
       }
     } catch (err) {
-      setError("Server error: " + err.message);
+      setError("Server error: " + err.message)
     }
-  };
+  }
 
   return (
-    <div className="signin-container">
-      {!isLogin && (
-        <form onSubmit={handleSignUp}>
-          <h2>Sign Up</h2>
-          {error && <p className="error">{error}</p>}
-          <div className="input-box">
-            <label>Username</label>
-            <input
-              className="field"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your username"
-            />
-          </div>
-          <div className="input-box">
-            <label>Email</label>
-            <input
-              className="field"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-            />
-          </div>
-          <div className="input-box">
-            <label>Password</label>
-            <input
-              className="field"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-            />
-          </div>
-          <div className="input-box">
-            <label>Repeat Password</label>
-            <input
-              className="field"
-              type="password"
-              value={repeatPassword}
-              onChange={(e) => setRepeatPassword(e.target.value)}
-              placeholder="Repeat your password"
-            />
-          </div>
-          <button className="signin-button" type="submit">
-            Sign Up
-          </button>
-          <p>
-            Already have an account?{" "}
-            <button onClick={() => setIsLogin(true)} className="toggle-link">
-              Log in here
+    <div className={styles.pageContainer}>
+      <div className={styles.formWrapper}>
+        <div className={styles.formContainer}>
+          <div className={styles.tabContainer}>
+            <button
+              className={`${styles.tabButton} ${!isLogin ? styles.activeTab : ""}`}
+              onClick={() => setIsLogin(false)}
+            >
+              Sign Up
             </button>
-          </p>
-        </form>
-      )}
+            <button
+              className={`${styles.tabButton} ${isLogin ? styles.activeTab : ""}`}
+              onClick={() => setIsLogin(true)}
+            >
+              Sign In
+            </button>
+          </div>
 
-      {isLogin && (
-        <form onSubmit={handleSignIn}>
-          <h2>Sign In</h2>
-          {error && <p className="error">{error}</p>}
-          <div className="input-box">
-            <label>Email</label>
-            <input
-              className="field"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-            />
-          </div>
-          <div className="input-box">
-            <label>Password</label>
-            <input
-              className="field"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-            />
-          </div>
-          <button className="signin-button" type="submit">
-            Sign In
-          </button>
-          <p>
-            Don't have an account?{" "}
-            <button onClick={() => setIsLogin(false)} className="toggle-link">
-              Sign up here
+          {error && <div className={styles.errorMessage}>{error}</div>}
+          {success && <div className={styles.successMessage}>{success}</div>}
+
+          <form onSubmit={isLogin ? handleSignIn : handleSignUp} className={styles.form}>
+            {!isLogin && (
+              <div className={styles.inputGroup}>
+                <FaUser className={styles.inputIcon} />
+                <input 
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Username"
+                  required
+                  className={styles.input}
+                />
+              </div>
+            )}
+            <div className={styles.inputGroup}>
+              <FaEnvelope className={styles.inputIcon} />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                required
+                className={styles.input}
+              />
+            </div>
+            <div className={styles.inputGroup}>
+              <FaLock className={styles.inputIcon} />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                required
+                className={styles.input}
+              />
+            </div>
+            {!isLogin && (
+              <div className={styles.inputGroup}>
+                <FaLock className={styles.inputIcon} />
+                <input
+                  type="password"
+                  value={repeatPassword}
+                  onChange={(e) => setRepeatPassword(e.target.value)}
+                  placeholder="Repeat Password"
+                  required
+                  className={styles.input}
+                />
+              </div>
+            )}
+            <button type="submit" className={styles.submitButton}>
+              {isLogin ? "Sign In" : "Sign Up"}
             </button>
-          </p>
-        </form>
-      )}
+          </form>
+        </div>
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default SigninPage;
-
-
-
-
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom"; // For navigation
-// import { FaGoogle, FaApple } from "react-icons/fa";
-// import "./SigninPage.module.css";
-
-// const SigninPage = () => {
-//   // State hooks for form data
-//   const [name, setName] = useState("");
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [repeatPassword, setRepeatPassword] = useState("");
-//   const [error, setError] = useState("");
-//   const [isLogin, setIsLogin] = useState(false); // State to toggle between sign in and sign up
-//   const navigate = useNavigate(); // For navigating between routes
-
-//   // Handle form submit for sign up
-//   const handleSignUp = async (e) => {
-//     e.preventDefault();
-
-//     // Check if passwords match
-//     if (password !== repeatPassword) {
-//       setError("Passwords do not match");
-//       return;
-//     }
-
-//     try {
-//       const response = await fetch("http://localhost:12345/api/register", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ name, email, password }),
-//       });
-
-//       const result = await response.json();
-
-//       if (response.status === 201) {
-//         console.log("User registered:", result);
-//         setIsLogin(true); // After registration, show the login form
-//       } else {
-//         setError(result.error || "Something went wrong");
-//       }
-//     } catch (err) {
-//       setError("Server error: " + err.message);
-//     }
-//   };
-
-//   // Handle form submit for sign in
-//   const handleSignIn = async (e) => {
-//     e.preventDefault();
-
-//     try {
-//       const response = await fetch("http://localhost:12345/api/signin", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ email, password }),
-//       });
-
-//       const result = await response.json();
-
-//       if (response.status === 200) {
-//         // Redirect based on role
-//         if (result.user.role === "admin") {
-//           navigate("/admin-dashboard"); // Admin redirected to the dashboard
-//         } else {
-//           navigate("/home"); // Regular user redirected to the home page
-//         }
-//       } else {
-//         setError(result.error || "Invalid credentials");
-//       }
-//     } catch (err) {
-//       setError("Server error: " + err.message);
-//     }
-//   };
-
-//   return (
-//     <div className="signin-container">
-//       {/* Sign-Up Form */}
-//       {!isLogin && (
-//         <form onSubmit={handleSignUp}>
-//           <h2>Sign Up</h2>
-//           {error && <p className="error">{error}</p>}
-//           <div className="input-box">
-//             <label>Username</label>
-//             <input
-//               className="field"
-//               type="text"
-//               value={name}
-//               onChange={(e) => setName(e.target.value)}
-//               placeholder="Enter your username"
-//             />
-//           </div>
-//           <div className="input-box">
-//             <label>Email</label>
-//             <input
-//               className="field"
-//               type="email"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//               placeholder="Enter your email"
-//             />
-//           </div>
-//           <div className="input-box">
-//             <label>Password</label>
-//             <input
-//               className="field"
-//               type="password"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               placeholder="Enter your password"
-//             />
-//           </div>
-//           <div className="input-box">
-//             <label>Repeat Password</label>
-//             <input
-//               className="field"
-//               type="password"
-//               value={repeatPassword}
-//               onChange={(e) => setRepeatPassword(e.target.value)}
-//               placeholder="Repeat your password"
-//             />
-//           </div>
-//           <button className="signin-button" type="submit">
-//             Sign Up
-//           </button>
-
-//           <div className="login-redirect">
-//             <p>
-//               Already have an account?{" "}
-//               <button onClick={() => setIsLogin(true)} className="login-link">
-//                 Click here to log in
-//               </button>
-//             </p>
-//           </div>
-//         </form>
-//       )}
-
-//       {/* Sign-In Form */}
-//       {isLogin && (
-//         <form onSubmit={handleSignIn}>
-//           <h2>Sign In</h2>
-//           {error && <p className="error">{error}</p>}
-//           <div className="input-box">
-//             <label>Email</label>
-//             <input
-//               className="field"
-//               type="email"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//               placeholder="Enter your email"
-//             />
-//           </div>
-//           <div className="input-box">
-//             <label>Password</label>
-//             <input
-//               className="field"
-//               type="password"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               placeholder="Enter your password"
-//             />
-//           </div>
-//           <button className="signin-button" type="submit">
-//             Sign In
-//           </button>
-
-//           <div className="login-redirect">
-//             <p>
-//               Don't have an account?{" "}
-//               <button onClick={() => setIsLogin(false)} className="login-link">
-//                 Click here to sign up
-//               </button>
-//             </p>
-//           </div>
-//         </form>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default SigninPage;
+export default SigninPage

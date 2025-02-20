@@ -1,19 +1,22 @@
-import { useState, useEffect } from "react";
-import styles from "./ManageMenu.module.css";
+"use client"
+
+import { useState, useEffect } from "react"
+import styles from "./ManageMenu.module.css"
 
 export default function ManageMenu() {
-  const [menuItems, setMenuItems] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [editingItem, setEditingItem] = useState(null);
+  const [menuItems, setMenuItems] = useState([])
+  const [categories, setCategories] = useState([])
+  const [editingItem, setEditingItem] = useState(null)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
     image: "",
     category: "",
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [selectedCategory, setSelectedCategory] = useState("All")
 
   // Fetch menu items and categories on load
   useEffect(() => {
@@ -22,45 +25,42 @@ export default function ManageMenu() {
         const [menuResponse, categoryResponse] = await Promise.all([
           fetch("http://localhost:3000/get-menu"),
           fetch("http://localhost:3000/get-categories"),
-        ]);
+        ])
 
         if (!menuResponse.ok || !categoryResponse.ok) {
-          throw new Error("Failed to fetch data.");
+          throw new Error("Failed to fetch data.")
         }
 
-        const [menuData, categoryData] = await Promise.all([
-          menuResponse.json(),
-          categoryResponse.json(),
-        ]);
+        const [menuData, categoryData] = await Promise.all([menuResponse.json(), categoryResponse.json()])
 
-        setMenuItems(menuData);
-        setCategories(categoryData);
-        setFormData((prev) => ({ ...prev, category: categoryData[0] || "" })); // Default category
+        setMenuItems(menuData)
+        setCategories(["All", ...categoryData])
+        setFormData((prev) => ({ ...prev, category: categoryData[0] || "" })) // Default category
       } catch (err) {
-        setError(err.message);
+        setError(err.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    fetchData();
-  }, []);
+    }
+    fetchData()
+  }, [])
 
   // Handle input change for adding/editing items
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     if (editingItem) {
-      setEditingItem((prev) => ({ ...prev, [name]: value }));
+      setEditingItem((prev) => ({ ...prev, [name]: value }))
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }))
     }
-  };
+  }
 
   // Add new menu item
   const handleAddItem = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!formData.name || !formData.description || !formData.price || !formData.category) {
-      alert("Please fill out all required fields.");
-      return;
+      alert("Please fill out all required fields.")
+      return
     }
 
     try {
@@ -68,83 +68,86 @@ export default function ManageMenu() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error("Failed to add menu item.");
+        throw new Error("Failed to add menu item.")
       }
 
-      const newItem = await response.json();
-      setMenuItems((prev) => [...prev, newItem]);
+      const newItem = await response.json()
+      setMenuItems((prev) => [...prev, newItem])
       setFormData({
         name: "",
         description: "",
         price: "",
         image: "",
-        category: categories[0] || "",
-      });
+        category: categories[1] || "",
+      })
     } catch (err) {
-      alert(err.message);
+      alert(err.message)
     }
-  };
+  }
 
   // Start editing an item
   const startEditing = (item) => {
-    setEditingItem({ ...item });
-  };
+    setEditingItem({ ...item })
+    // Scroll to the top of the page
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
 
   // Save edited item
   const saveEdit = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/update-menu-item/${editingItem._id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(editingItem),
-        }
-      );
+      const response = await fetch(`http://localhost:3000/update-menu-item/${editingItem._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editingItem),
+      })
 
       if (!response.ok) {
-        throw new Error("Failed to update menu item.");
+        throw new Error("Failed to update menu item.")
       }
 
-      const updatedItem = await response.json();
-      setMenuItems((prev) =>
-        prev.map((item) => (item._id === updatedItem._id ? updatedItem : item))
-      );
-      setEditingItem(null);
+      const updatedItem = await response.json()
+      setMenuItems((prev) => prev.map((item) => (item._id === updatedItem._id ? updatedItem : item)))
+      setEditingItem(null)
     } catch (err) {
-      alert(err.message);
+      alert(err.message)
     }
-  };
+  }
 
   // Cancel editing
   const cancelEdit = () => {
-    setEditingItem(null);
-  };
+    setEditingItem(null)
+  }
 
   // Delete menu item
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this item?")) return;
+    if (!window.confirm("Are you sure you want to delete this item?")) return
 
     try {
       const response = await fetch(`http://localhost:3000/delete-menu-item/${id}`, {
         method: "DELETE",
-      });
+      })
 
       if (!response.ok) {
-        throw new Error("Failed to delete menu item.");
+        throw new Error("Failed to delete menu item.")
       }
 
-      setMenuItems((prev) => prev.filter((item) => item._id !== id));
+      setMenuItems((prev) => prev.filter((item) => item._id !== id))
     } catch (err) {
-      alert(err.message);
+      alert(err.message)
     }
-  };
+  }
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p>Loading...</p>
+  if (error) return <p>Error: {error}</p>
+
+  const filteredItems =
+    selectedCategory === "All" ? menuItems : menuItems.filter((item) => item.category === selectedCategory)
 
   return (
     <div className={styles.container}>
@@ -184,13 +187,8 @@ export default function ManageMenu() {
             value={formData.image}
             onChange={handleInputChange}
           />
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleInputChange}
-            required
-          >
-            {categories.map((category) => (
+          <select name="category" value={formData.category} onChange={handleInputChange} required>
+            {categories.slice(1).map((category) => (
               <option key={category} value={category}>
                 {category}
               </option>
@@ -234,13 +232,8 @@ export default function ManageMenu() {
             value={editingItem.image}
             onChange={handleInputChange}
           />
-          <select
-            name="category"
-            value={editingItem.category}
-            onChange={handleInputChange}
-            required
-          >
-            {categories.map((category) => (
+          <select name="category" value={editingItem.category} onChange={handleInputChange} required>
+            {categories.slice(1).map((category) => (
               <option key={category} value={category}>
                 {category}
               </option>
@@ -255,26 +248,66 @@ export default function ManageMenu() {
         </form>
       )}
 
+      {/* Category Filter */}
+      <div className={styles.filterContainer}>
+        {categories.map((category) => (
+          <button
+            key={category}
+            className={`${styles.filterButton} ${selectedCategory === category ? styles.active : ""}`}
+            onClick={() => setSelectedCategory(category)}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+
       {/* Display Menu Items */}
       <div className={styles.menuList}>
         <h3>Existing Menu Items</h3>
-        {menuItems.map((item) => (
-          <div key={item._id} className={styles.menuItem}>
-            <img
-              src={item.image || "https://via.placeholder.com/150"}
-              alt={item.name}
-            />
-            <div>
-              <h4>{item.name}</h4>
-              <p>{item.description}</p>
-              <p>Price: ${item.price}</p>
-              <p>Category: {item.category}</p>
+        {selectedCategory === "All" ? (
+          categories.slice(1).map((category) => (
+            <div key={category} className={styles.categorySection}>
+              <h4 className={styles.categoryTitle}>{category}</h4>
+              <div className={styles.categoryItems}>
+                {filteredItems
+                  .filter((item) => item.category === category)
+                  .map((item) => (
+                    <div key={item._id} className={styles.menuItem}>
+                      <img src={item.image || "https://via.placeholder.com/150"} alt={item.name} />
+                      <div>
+                        <h4>{item.name}</h4>
+                        <p>{item.description}</p>
+                        <p>Price: ${item.price}</p>
+                      </div>
+                      <button onClick={() => startEditing(item)}>Edit</button>
+                      <button className={styles.deleteButton} onClick={() => handleDelete(item._id)}>
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+              </div>
             </div>
-            <button onClick={() => startEditing(item)}>Edit</button>
-            <button onClick={() => handleDelete(item._id)}>Delete</button>
+          ))
+        ) : (
+          <div className={styles.categoryItems}>
+            {filteredItems.map((item) => (
+              <div key={item._id} className={styles.menuItem}>
+                <img src={item.image || "https://via.placeholder.com/150"} alt={item.name} />
+                <div>
+                  <h4>{item.name}</h4>
+                  <p>{item.description}</p>
+                  <p>Price: ${item.price}</p>
+                </div>
+                <button onClick={() => startEditing(item)}>Edit</button>
+                <button className={styles.deleteButton} onClick={() => handleDelete(item._id)}>
+                  Delete
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
-  );
+  )
 }
+

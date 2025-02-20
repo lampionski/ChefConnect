@@ -1,96 +1,119 @@
-import { useState, useEffect } from "react";
-import classes from "./ProductsPage.module.css";
+"use client"
+
+import { useState, useEffect } from "react"
+import classes from "./ProductsPage.module.css"
 
 export default function ProductsPage() {
-  const [menuItems, setMenuItems] = useState([]);
-  const [categories, setCategories] = useState([]); // State for categories
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [category, setCategory] = useState(""); // State for selected category
+  const [menuItems, setMenuItems] = useState([])
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [category, setCategory] = useState("")
 
-  // Fetch menu items
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/get-menu${category ? `?category=${category}` : ""}`
-        );
+        const response = await fetch(`http://localhost:3000/get-menu${category ? `?category=${category}` : ""}`)
         if (!response.ok) {
-          throw new Error("Failed to fetch menu items.");
+          throw new Error("Failed to fetch menu items.")
         }
-        const data = await response.json();
-        setMenuItems(data);
-        setLoading(false);
+        const data = await response.json()
+        setMenuItems(data)
+        setLoading(false)
       } catch (err) {
-        setError(err.message);
-        setLoading(false);
+        setError(err.message)
+        setLoading(false)
       }
-    };
-    fetchMenu();
-  }, [category]); // Re-fetch when category changes
+    }
+    fetchMenu()
+  }, [category])
 
-  // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:3000/get-categories");
+        const response = await fetch("http://localhost:3000/get-categories")
         if (!response.ok) {
-          throw new Error("Failed to fetch categories.");
+          throw new Error("Failed to fetch categories.")
         }
-        const data = await response.json();
-        setCategories(data);
+        const data = await response.json()
+        setCategories(["All", ...data])
       } catch (err) {
-        setError(err.message);
+        setError(err.message)
       }
-    };
-    fetchCategories();
-  }, []);
+    }
+    fetchCategories()
+  }, [])
+
+  const sortedMenuItems = [...menuItems].sort((a, b) => {
+    if (category === "") {
+      return a.category.localeCompare(b.category)
+    }
+    return 0
+  })
 
   if (loading) {
-    return <p className={classes.loading}>Loading...</p>;
+    return <p className={classes.loading}>Loading...</p>
   }
 
   if (error) {
-    return <p className={classes.error}>{error}</p>;
+    return <p className={classes.error}>{error}</p>
   }
 
   return (
     <div className={classes.container}>
       <h2>Product List</h2>
       <div className={classes.filterContainer}>
-        <label htmlFor="category">Filter by category:</label>
-        <select
-          id="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className={classes.categoryDropdown}
-        >
-          <option value="">All</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            className={`${classes.filterButton} ${
+              category === (cat === "All" ? "" : cat) ? classes.active : ""
+            } ${cat === "All" ? classes.defaultFilter : ""}`}
+            onClick={() => setCategory(cat === "All" ? "" : cat)}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
-      {menuItems.length === 0 ? (
+      {sortedMenuItems.length === 0 ? (
         <p>No items available in this category.</p>
       ) : (
         <ul className={classes.menuList}>
-          {menuItems.map((item) => (
-            <li key={item._id} className={classes.menuItem}>
-              <img
-                src={item.image} // Image URL here
-                alt={item.name}
-                className={classes.menuItemImage}
-              />
-              <h3>{item.name}</h3>
-              <p>{item.description}</p>
-              <p>${item.price}</p>
+          {category === "" ? (
+            categories.slice(1).map((cat) => (
+              <li key={cat} className={classes.categorySection}>
+                <h3 className={classes.categoryTitle}>{cat}</h3>
+                <ul className={classes.categoryItems}>
+                  {sortedMenuItems
+                    .filter((item) => item.category === cat)
+                    .map((item) => (
+                      <li key={item._id} className={classes.menuItem}>
+                        <img src={item.image || "/placeholder.svg"} alt={item.name} className={classes.menuItemImage} />
+                        <h4>{item.name}</h4>
+                        <p>{item.description}</p>
+                        <p>${item.price}</p>
+                      </li>
+                    ))}
+                </ul>
+              </li>
+            ))
+          ) : (
+            <li className={classes.categorySection}>
+              <ul className={classes.categoryItems}>
+                {sortedMenuItems.map((item) => (
+                  <li key={item._id} className={classes.menuItem}>
+                    <img src={item.image || "/placeholder.svg"} alt={item.name} className={classes.menuItemImage} />
+                    <h4>{item.name}</h4>
+                    <p>{item.description}</p>
+                    <p>${item.price}</p>
+                  </li>
+                ))}
+              </ul>
             </li>
-          ))}
+          )}
         </ul>
       )}
     </div>
-  );
+  )
 }
+

@@ -1,250 +1,185 @@
-/* .container {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    font-size: 24px;
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .loading,
-  .error {
-    text-align: center;
-    font-size: 18px;
-    color: #666;
-  }
-  
-  .menuList {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-  }
-  
-  .menuItem {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
-  }
-  
-  .menuItem:hover {
-    transform: translateY(-5px);
-  }
-  
-  .menuItem h3 {
-    font-size: 20px;
-    margin: 0 0 10px;
-  }
-  
-  .menuItem p {
-    margin: 5px 0;
-    color: #555;
-  }
+body {
+  background-color: #1b1921;
+}
 
-  .deleteButton {
-    background-color: #ff4d4f;
-    color: white;
-    border: none;
-    padding: 0.5em 1em;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-top: 0.5em;
-  }
-  
-  .deleteButton:hover {
-    background-color: #d9363e;
-  }
-  
-  .filterContainer {
-    margin-bottom: 1em;
-    display: flex;
-    align-items: center;
-    gap: 1em;
-  }
-  
-  .categoryDropdown {
-    padding: 0.5em;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-   */
-
-
-
-
-   /* Container for the whole page */
 .container {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-size: 28px;
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.loading,
+.error {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+}
+
+.menuList {
+  list-style: none;
+  padding: 0;
+}
+
+.categorySection {
+  margin-bottom: 40px;
+}
+
+.categoryTitle {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ffa500;
+}
+
+.categoryItems {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+}
+
+.menuItem {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.menuItem:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.menuItem h4 {
+  font-size: 22px;
+  margin: 15px 0;
+  color: #333;
+}
+
+.menuItem p {
+  margin: 10px 0;
+  color: #555;
+  font-size: 16px;
+  text-align: center;
+}
+
+.menuItemImage {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.filterContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.filterButton {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.filterButton:hover {
+  background-color: #ffa500;
+  color: #ffffff;
+}
+
+.filterButton.active {
+  background-color: #ffa500;
+  color: #ffffff;
+}
+
+.defaultFilter {
+  font-weight: bold;
+  text-align: center;
+}
+
+.loading {
+  font-size: 20px;
+  color: #ffa500;
+}
+
+.error {
+  font-size: 20px;
+  color: #dc3545;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
   }
-  
-  /* Title styling */
+
   h2 {
     font-size: 24px;
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
   }
-  
-  /* Loading and error messages */
-  .loading,
-  .error {
-    text-align: center;
-    font-size: 18px;
-    color: #666;
+
+  .categoryItems {
+    grid-template-columns: 1fr;
   }
-  
-  /* Menu list (using grid layout for responsiveness) */
-  .menuList {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-  }
-  
-  /* Each menu item styling */
+
   .menuItem {
-    background-color: #fff;
     padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
-  
-  /* Hover effect for menu items */
-  .menuItem:hover {
-    transform: translateY(-5px);
-  }
-  
-  /* Menu item name */
-  .menuItem h3 {
-    font-size: 20px;
-    margin: 0 0 10px;
-    color: #333;
-  }
-  
-  /* Description text */
-  .menuItem p {
-    margin: 5px 0;
-    color: #555;
-    font-size: 16px;
-    text-align: center;
-  }
-  
-  /* Image styling for menu items */
+
   .menuItemImage {
     width: 150px;
     height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 15px;
   }
-  
-  /* Button to delete items */
-  .deleteButton {
-    background-color: #ff4d4f;
-    color: white;
-    border: none;
-    padding: 0.5em 1em;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-top: 0.5em;
-    transition: background-color 0.3s;
+
+  .menuItem h4 {
+    font-size: 20px;
   }
-  
-  /* Hover effect for delete button */
-  .deleteButton:hover {
-    background-color: #d9363e;
+
+  .filterButton {
+    padding: 8px 16px;
+    font-size: 14px;
   }
-  
-  /* Filter container styling (category dropdown) */
-  .filterContainer {
-    margin-bottom: 1em;
-    display: flex;
-    align-items: center;
-    gap: 1em;
+}
+
+@media (max-width: 480px) {
+  .menuItem {
+    padding: 10px;
   }
-  
-  /* Dropdown for selecting category */
-  .categoryDropdown {
-    padding: 0.5em;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
+
+  .menuItemImage {
+    width: 120px;
+    height: 120px;
   }
-  
-  /* Loading message style */
-  .loading {
+
+  .menuItem h4 {
     font-size: 18px;
-    color: #888;
   }
-  
-  /* Error message style */
-  .error {
-    font-size: 18px;
-    color: #ff4d4f;
+
+  .filterButton {
+    padding: 6px 12px;
+    font-size: 12px;
   }
-  
-  /* Responsive image on larger screens */
-  @media (min-width: 768px) {
-    .menuItem {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-  
-    .menuItemImage {
-      width: 200px;
-      height: 200px;
-    }
-  
-    .menuItem h3 {
-      font-size: 22px;
-    }
-  }
-  
-  /* Responsiveness for very small screens (like mobile) */
-  @media (max-width: 480px) {
-    .menuList {
-      grid-template-columns: 1fr; /* Stack items vertically */
-    }
-  
-    .menuItem {
-      padding: 10px;
-    }
-  
-    .menuItemImage {
-      width: 120px;
-      height: 120px;
-    }
-  
-    .menuItem h3 {
-      font-size: 18px;
-    }
-  
-    .categoryDropdown {
-      width: 100%;
-    }
-  }
-  
+}
+

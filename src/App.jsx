@@ -11,6 +11,8 @@ import { useContext, useState } from "react";
 import ManageMenu from "./pages/ManageMenu";
 import UserReservationsPage from "./pages/UserReservationsPage"; // User reservations page
 import AdminReservationsPage from "./pages/AdminReservationsPage"; // Admin reservations page
+import Profile from "./pages/Profile"
+import Messages from "./pages/Messages"
 
 function App() {
   const [user, setUser] = useState(null);
@@ -30,6 +32,8 @@ function App() {
         { path: "/products/:productID", element: <ProductDetails /> },
         { path: "/reservations", element: <UserReservationsPage /> }, // User reservation page
         { path: "/admin/reservations", element: <AdminReservationsPage /> }, // Admin reservations management page
+        { path: "/profile", element: <Profile /> },
+        { path: "/messages", element: <Messages /> },
       ],
     },
   ]);

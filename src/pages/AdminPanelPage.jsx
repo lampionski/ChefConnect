@@ -1,20 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AdminPanel.module.css";
+import UserCTX from "../context/UserContext";
+
 
 const AdminDashboard = ({ handleLogout }) => {
+  const userData = useContext(UserCTX); 
   const navigate = useNavigate();
 
   const logout = async () => {
-    try {
-      await fetch("http://localhost:3000/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      navigate("/");
-    } catch (err) {
-      console.error("Logout failed", err);
-    }
+    await fetch("http://localhost:3000/logout", { credentials: "include" });
+    userData.setUser(null);
+    navigate("/");
   };
 
   return (
