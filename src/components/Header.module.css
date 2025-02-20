@@ -218,3 +218,55 @@
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+.header {
+  position: relative;
+  z-index: 1000;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+   
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: none;
+  }
+
+  .navOpen {
+    display: flex;
+  }
+
+  .nav a,
+  .nav .userMenu {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .dropdownMenu {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+  }
+}
+

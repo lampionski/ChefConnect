@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useContext } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useState, useContext, useEffect } from "react"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import { FaPhoneAlt, FaBars, FaUserCog, FaSignOutAlt, FaEnvelope } from "react-icons/fa"
 import UserCTX from "../context/UserContext"
 import styles from "./Header.module.css"
@@ -10,7 +10,13 @@ import logo from "../assets/logo.png"
 export default function Header() {
   const userData = useContext(UserCTX)
   const navigate = useNavigate()
+  const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+
+  useEffect(() => {
+    // Close the menu when the route changes
+    setMenuOpen(false)
+  }, [location])
 
   const logout = async () => {
     await fetch("http://localhost:3000/logout", { credentials: "include" })
@@ -34,34 +40,48 @@ export default function Header() {
         </div>
       </div>
       <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`}>
-        <Link to="/">Home</Link>
-        <Link to="/products">Menu</Link>
-        <Link to="/reservations">Reserve Table</Link>
-        <Link to="/contact">Contact us</Link>
+        <Link to="/" onClick={() => setMenuOpen(false)}>
+          Home
+        </Link>
+        <Link to="/products" onClick={() => setMenuOpen(false)}>
+          Menu
+        </Link>
+        <Link to="/reservations" onClick={() => setMenuOpen(false)}>
+          Reserve Table
+        </Link>
+        <Link to="/contact" onClick={() => setMenuOpen(false)}>
+          Contact us
+        </Link>
         {userData.user ? (
           <div className={styles.userMenu}>
             <FaBars onClick={toggleMenu} className={styles.menuIcon} />
             {menuOpen && (
               <div className={styles.dropdownMenu}>
                 {userData.user.role === "admin" && (
-                  <Link to="/adminPanel" className={styles.menuItem}>
+                  <Link to="/adminPanel" className={styles.menuItem} onClick={() => setMenuOpen(false)}>
                     <FaUserCog /> Admin Panel
                   </Link>
                 )}
-                <Link to="/profile" className={styles.menuItem}>
+                <Link to="/profile" className={styles.menuItem} onClick={() => setMenuOpen(false)}>
                   <FaUserCog /> Profile
                 </Link>
-                <Link to="/messages" className={styles.menuItem}>
+                <Link to="/messages" className={styles.menuItem} onClick={() => setMenuOpen(false)}>
                   <FaEnvelope /> Messages
                 </Link>
-                <button onClick={logout} className={`${styles.menuItem} ${styles.signOut}`}>
+                <button
+                  onClick={() => {
+                    logout()
+                    setMenuOpen(false)
+                  }}
+                  className={`${styles.menuItem} ${styles.signOut}`}
+                >
                   <FaSignOutAlt /> Sign Out
                 </button>
               </div>
             )}
           </div>
         ) : (
-          <Link to="/signin" className={styles.signUpButton}>
+          <Link to="/signin" className={styles.signUpButton} onClick={() => setMenuOpen(false)}>
             Sign up
           </Link>
         )}
