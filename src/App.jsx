@@ -1,21 +1,24 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import RootLayout, { loader as rootLoader } from "./components/RootLayout";
-import HomePage from "./pages/HomePage";
-import ProductsPage from "./pages/ProductsPage";
-import SigninPage from "./pages/SigninPage";
-import ProductDetails from "./pages/ProductDetails";
-import Contact from "./pages/Contact";
-import AdminPanel from "./pages/AdminPanelPage";
-import UserCTX from "./context/UserContext";
-import { useContext, useState } from "react";
-import ManageMenu from "./pages/ManageMenu";
-import UserReservationsPage from "./pages/UserReservationsPage"; // User reservations page
-import AdminReservationsPage from "./pages/AdminReservationsPage"; // Admin reservations page
+"use client"
+
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import RootLayout, { loader as rootLoader } from "./components/RootLayout"
+import HomePage from "./pages/HomePage"
+import ProductsPage from "./pages/ProductsPage"
+import SigninPage from "./pages/SigninPage"
+import ProductDetails from "./pages/ProductDetails"
+import Contact from "./pages/Contact"
+import AdminPanel from "./pages/AdminPanelPage"
+import UserCTX from "./context/UserContext"
+import { useState } from "react"
+import ManageMenu from "./pages/ManageMenu"
+import AdminReservationsPage from "./pages/AdminReservationsPage"
 import Profile from "./pages/Profile"
 import Messages from "./pages/Messages"
+import ReservationsPage from "./pages/ReservationsPage"
+import ManageUsersPage from "./pages/ManageUsersPage"
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null)
 
   const router = createBrowserRouter([
     {
@@ -30,19 +33,27 @@ function App() {
         { path: "/adminPanel", element: <AdminPanel /> },
         { path: "/manage-menu", element: <ManageMenu /> },
         { path: "/products/:productID", element: <ProductDetails /> },
-        { path: "/reservations", element: <UserReservationsPage /> }, // User reservation page
-        { path: "/admin/reservations", element: <AdminReservationsPage /> }, // Admin reservations management page
+        { path: "/reservations", element: <ReservationsPage /> },
+        { path: "/admin/reservations", element: <AdminReservationsPage /> },
         { path: "/profile", element: <Profile /> },
         { path: "/messages", element: <Messages /> },
+        { path: "/admin/manage-users", element: <ManageUsersPage /> },
       ],
     },
-  ]);
+  ])
 
   return (
     <UserCTX.Provider value={{ user, setUser }}>
-      <RouterProvider router={router} />
+      <RouterProvider router={router} fallbackElement={<div>Loading...</div>}/>
     </UserCTX.Provider>
-  );
+  )
+
+  // return (
+  //   <UserCTX.Provider value={{ user, setUser }}>
+  //     <RouterProvider router={router}  />
+  //   </UserCTX.Provider>
+  // )
 }
 
-export default App;
+export default App
+

@@ -1,44 +1,66 @@
 .messagesContainer {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .loading {
-    text-align: center;
-    font-size: 18px;
-    color: #666;
-  }
-  
-  .messageList {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .messageItem {
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-  }
-  
-  .messageHeader {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-  
-  .messageSender {
-    font-weight: bold;
-  }
-  
-  .messageDate {
-    color: #666;
-    font-size: 0.9em;
-  }
-  
-  .messageContent {
-    margin: 0;
-  }
-  
-  
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.loading,
+.error {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.messageList {
+  list-style-type: none;
+  padding: 0;
+}
+
+.messageItem {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.messageItem h3 {
+  margin-top: 0;
+}
+
+.reservationActions {
+  margin-top: 10px;
+}
+
+.reservationActions button {
+  margin-right: 10px;
+  padding: 5px 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reservationActions button:last-child {
+  background-color: #f44336;
+}
+
+.userContainer {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.userContainer img {
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+}
+
+.userContainer p {
+  margin: 0px;
+  font-weight: bold;
+  font-size: 20px;
+}

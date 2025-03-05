@@ -18,26 +18,19 @@ export function AboutUs() {
                     />
                 </div>
                 <div className={styles.textContainer}>
-                    <h2>For Godzila</h2>
+                    <h2>За ресторанта</h2>
                     <p>
-                        Back in 1999, the first GODZILA restaurant was opened in Varna. 
-                        For 20 years, we have had 5 restaurants and won the trust of our 
-                        guests with varied and modern cuisine, non-standard portions, 
-                        attractive prices, and excellent service.
+                    През далечната 1999 г. във Варна е открит първият ресторант ГОДЗИЛА. За 20 години имаме 5 ресторанта и спечелихме доверието на нашите гости с разнообразна и модерна кухня, нестандартни порции, атрактивни цени и отлично обслужване.
                     </p>
                     <p>
-                        Elegant. Provocative. Artistic. Bright, with a feeling of infinity. 
-                        Modern, but with a human face. The place where in peace and comfort 
-                        you can eat deliciously and escape for a while from the big city. 
-                        A wonderful space for any art format, this is the interior of our 
-                        newest restaurant in Sofia.
+                    Елегантен и ярък, с усещане за безкрайност. Модерна, но с човешко лице. Мястото, където е на спокойствие и комфорт Можете да хапнете вкусно и да избягате за малко от големия град. Прекрасно пространство за всеки арт формат, това е интериорът на нашия Най-новият ресторант в София.
                     </p>
                     
                     <button
                         className={styles.contactButton}
                         onClick={() => navigate('/contact')} // Use navigate function to redirect
                     >
-                        Contacts
+                        Контакт
                     </button>
 
                 </div>

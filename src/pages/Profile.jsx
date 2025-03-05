@@ -28,6 +28,7 @@ const Profile = () => {
       })
       if (response.ok) {
         const userData = await response.json()
+        console.log(userData);
         setUser(userData)
       } else {
         throw new Error("Failed to fetch user data")
@@ -131,6 +132,8 @@ const Profile = () => {
     }
   }
 
+  console.log(isEditing)
+
   return (
     <div className={styles.profileContainer}>
       <h1>User Profile</h1>
@@ -198,15 +201,15 @@ const Profile = () => {
           </div>
           <div className={styles.buttonGroup}>
             {isEditing ? (
-              <button type="submit" className={styles.saveButton}>
+              <button className={styles.saveButton}>
                 Save Changes
               </button>
             ) : (
-              <button type="button" onClick={() => setIsEditing(true)} className={styles.editButton}>
+              <button type="button" onClick={e => (e.preventDefault(), setIsEditing(true))} className={styles.editButton}>
                 Edit Profile
               </button>
             )}
-            <button type="button" onClick={() => setShowPasswordModal(true)} className={styles.changePasswordButton}>
+            <button type="button" onClick={e => (e.preventDefault(), setShowPasswordModal(true))} className={styles.changePasswordButton}>
               <FaLock /> Change Password
             </button>
           </div>

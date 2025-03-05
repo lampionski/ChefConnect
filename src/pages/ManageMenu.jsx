@@ -18,7 +18,6 @@ export default function ManageMenu() {
   const [error, setError] = useState(null)
   const [selectedCategory, setSelectedCategory] = useState("All")
 
-  // Fetch menu items and categories on load
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,7 +34,7 @@ export default function ManageMenu() {
 
         setMenuItems(menuData)
         setCategories(["All", ...categoryData])
-        setFormData((prev) => ({ ...prev, category: categoryData[0] || "" })) // Default category
+        setFormData((prev) => ({ ...prev, category: categoryData[0] || "" }))
       } catch (err) {
         setError(err.message)
       } finally {
@@ -45,7 +44,6 @@ export default function ManageMenu() {
     fetchData()
   }, [])
 
-  // Handle input change for adding/editing items
   const handleInputChange = (e) => {
     const { name, value } = e.target
     if (editingItem) {
@@ -55,7 +53,6 @@ export default function ManageMenu() {
     }
   }
 
-  // Add new menu item
   const handleAddItem = async (e) => {
     e.preventDefault()
     if (!formData.name || !formData.description || !formData.price || !formData.category) {
@@ -88,17 +85,14 @@ export default function ManageMenu() {
     }
   }
 
-  // Start editing an item
   const startEditing = (item) => {
     setEditingItem({ ...item })
-    // Scroll to the top of the page
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     })
   }
 
-  // Save edited item
   const saveEdit = async () => {
     try {
       const response = await fetch(`http://localhost:3000/update-menu-item/${editingItem._id}`, {
@@ -119,12 +113,10 @@ export default function ManageMenu() {
     }
   }
 
-  // Cancel editing
   const cancelEdit = () => {
     setEditingItem(null)
   }
 
-  // Delete menu item
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return
 
@@ -153,53 +145,59 @@ export default function ManageMenu() {
     <div className={styles.container}>
       <h2>Manage Menu</h2>
 
-      {/* Add Item Form */}
-      {!editingItem && (
-        <form onSubmit={handleAddItem} className={styles.addItemForm}>
-          <h3>Add New Item</h3>
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={formData.name}
-            onChange={handleInputChange}
-            required
-          />
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={formData.description}
-            onChange={handleInputChange}
-            required
-          ></textarea>
-          <input
-            type="number"
-            name="price"
-            placeholder="Price"
-            value={formData.price}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="text"
-            name="image"
-            placeholder="Image URL (Optional)"
-            value={formData.image}
-            onChange={handleInputChange}
-          />
-          <select name="category" value={formData.category} onChange={handleInputChange} required>
-            {categories.slice(1).map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <button type="submit">Add Item</button>
-        </form>
-      )}
-
-      {/* Edit Item Form */}
-      {editingItem && (
+      {!editingItem ? (
+        <div className={styles.addItemContainer}>
+          <form onSubmit={handleAddItem} className={styles.addItemForm}>
+            <h3>Add New Item</h3>
+            <input
+              type="text"
+              name="name"
+              placeholder="Name"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+            />
+            <textarea
+              name="description"
+              placeholder="Description"
+              value={formData.description}
+              onChange={handleInputChange}
+              required
+            ></textarea>
+            <input
+              type="number"
+              name="price"
+              placeholder="Price"
+              value={formData.price}
+              onChange={handleInputChange}
+              required
+            />
+            <input
+              type="text"
+              name="image"
+              placeholder="Image URL"
+              value={formData.image}
+              onChange={handleInputChange}
+            />
+            <select name="category" value={formData.category} onChange={handleInputChange} required>
+              {categories.slice(1).map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+            <button type="submit">Add Item</button>
+          </form>
+          <div className={styles.imagePreview}>
+            <h3>Image Preview</h3>
+            {formData.image ? (
+              <img src={formData.image || "/placeholder.svg"} alt="Preview" />
+            ) : (
+              <div className={styles.placeholderImage}>No image URL provided</div>
+            )}
+          </div>
+        </div>
+      ) : (
         <form className={styles.addItemForm}>
           <h3>Edit Item</h3>
           <input
@@ -248,7 +246,6 @@ export default function ManageMenu() {
         </form>
       )}
 
-      {/* Category Filter */}
       <div className={styles.filterContainer}>
         {categories.map((category) => (
           <button
@@ -261,7 +258,6 @@ export default function ManageMenu() {
         ))}
       </div>
 
-      {/* Display Menu Items */}
       <div className={styles.menuList}>
         <h3>Existing Menu Items</h3>
         {selectedCategory === "All" ? (
@@ -273,7 +269,7 @@ export default function ManageMenu() {
                   .filter((item) => item.category === category)
                   .map((item) => (
                     <div key={item._id} className={styles.menuItem}>
-                      <img src={item.image || "https://via.placeholder.com/150"} alt={item.name} />
+                      <img src={item.image || "/placeholder.svg"} alt={item.name} />
                       <div>
                         <h4>{item.name}</h4>
                         <p>{item.description}</p>
@@ -292,7 +288,7 @@ export default function ManageMenu() {
           <div className={styles.categoryItems}>
             {filteredItems.map((item) => (
               <div key={item._id} className={styles.menuItem}>
-                <img src={item.image || "https://via.placeholder.com/150"} alt={item.name} />
+                <img src={item.image || "/placeholder.svg"} alt={item.name} />
                 <div>
                   <h4>{item.name}</h4>
                   <p>{item.description}</p>

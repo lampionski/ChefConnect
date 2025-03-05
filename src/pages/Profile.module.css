@@ -1,22 +1,27 @@
 .profileContainer {
-  max-width: 800px;
+  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
   padding: 20px;
   background-color: #e0e0e0;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 .profileContainer h1 {
   text-align: center;
   color: #333;
   margin-bottom: 20px;
+  font-size: 2rem;
 }
 
 .profileContent {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
   gap: 20px;
+  width: 100%;
 }
 
 .profilePhoto {
@@ -48,8 +53,8 @@
 }
 
 .profileForm {
-  flex: 1;
-  min-width: 300px;
+  width: 100%;
+  max-width: 500px;
 }
 
 .formGroup {
@@ -67,11 +72,14 @@
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .buttonGroup {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
   margin-top: 20px;
 }
 
@@ -87,6 +95,10 @@
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s;
+  flex: 1 1 auto;
+  max-width: 200px;
+  min-width: 120px;
+  text-align: center;
 }
 
 .editButton:hover,
@@ -121,7 +133,8 @@
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-  width: 300px;
+  width: 90%;
+  max-width: 400px;
 }
 
 .modalContent h2 {
@@ -129,29 +142,65 @@
   color: #333;
 }
 
-@media (max-width: 600px) {
+@media (min-width: 768px) {
+  .profileContainer {
+    padding: 30px;
+    max-width: 800px;
+  }
+
   .profileContent {
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    align-items: flex-start;
   }
 
   .profilePhoto {
-    margin-bottom: 20px;
+    flex-shrink: 0;
   }
 
   .profileForm {
-    width: 100%;
+    flex-grow: 1;
+  }
+}
+
+@media (max-width: 767px) {
+  .profileContainer {
+    padding: 15px;
+  }
+
+  .profileContainer h1 {
+    font-size: 1.75rem;
   }
 
   .buttonGroup {
     flex-direction: column;
-    gap: 10px;
+    align-items: center;
   }
 
   .editButton,
   .saveButton,
-  .changePasswordButton {
+  .changePasswordButton,
+  .cancelButton {
     width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileContainer h1 {
+    font-size: 1.5rem;
+  }
+
+  .profilePhoto {
+    width: 150px;
+    height: 150px;
+  }
+
+  .formGroup label {
+    font-size: 14px;
+  }
+
+  .formGroup input {
+    font-size: 14px;
   }
 }
 

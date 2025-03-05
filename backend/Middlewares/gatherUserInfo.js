@@ -9,6 +9,7 @@ async function gatherUserInfo(req, res, next) {
   if (!accessToken?.uid) return res.status(400).send("Invalid token");
   const fetchedUser = await UserSchema.findById(accessToken.uid);
   req.user = fetchedUser;
+  console.log(req.user);
   next();
 }
 
