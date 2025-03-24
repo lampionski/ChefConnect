@@ -5,8 +5,8 @@ import styles from './Location.module.css';
 const Location = () => {
     return (
         <section className={styles.location}>
-            <h2>Visit Us</h2>
-            <p>Kniaz Boris I Blvd. 66, Varna, BG 9000</p> {/* Updated address */}
+            <h2>Посетете ни</h2>
+            <p>булевард Княз Борис I. 66, Варна, BG 9000</p> {/* Updated address */}
             <div className={styles.mapContainer}>
                 <iframe
                     title="Restaurant Location"

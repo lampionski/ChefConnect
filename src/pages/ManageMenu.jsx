@@ -1,9 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom" // Added useNavigate
 import styles from "./ManageMenu.module.css"
+import { FaArrowUp, FaArrowLeft } from "react-icons/fa" // Added FaArrowLeft
 
 export default function ManageMenu() {
+  const navigate = useNavigate() // Added for navigation
   const [menuItems, setMenuItems] = useState([])
   const [categories, setCategories] = useState([])
   const [editingItem, setEditingItem] = useState(null)
@@ -17,6 +20,7 @@ export default function ManageMenu() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedCategory, setSelectedCategory] = useState("All")
+  const [showScrollTop, setShowScrollTop] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,7 +46,30 @@ export default function ManageMenu() {
       }
     }
     fetchData()
+
+    // Add scroll event listener
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true)
+      } else {
+        setShowScrollTop(false)
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
+
+  const goBack = () => {
+    navigate(-1) // Navigate back to previous page
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -135,116 +162,63 @@ export default function ManageMenu() {
     }
   }
 
-  if (loading) return <p>Loading...</p>
-  if (error) return <p>Error: {error}</p>
+  if (loading) return <p>Зарежда...</p>
+  if (error) return <p>Грешка: {error}</p>
 
+  // Fix the filter to work with "All" instead of "Всичко"
   const filteredItems =
     selectedCategory === "All" ? menuItems : menuItems.filter((item) => item.category === selectedCategory)
 
+  const renderForm = (data, isEditing) => (
+    <div className={styles.addItemContainer}>
+      <form onSubmit={isEditing ? undefined : handleAddItem} className={styles.addItemForm}>
+        <h3>{isEditing ? "Променете продукт" : "Добавете нов продукт"}</h3>
+        <input type="text" name="name" placeholder="Име" value={data.name} onChange={handleInputChange} required />
+        <textarea
+          name="description"
+          placeholder="Описание"
+          value={data.description}
+          onChange={handleInputChange}
+          required
+        ></textarea>
+        <input type="number" name="price" placeholder="Цена" value={data.price} onChange={handleInputChange} required />
+        <input type="text" name="image" placeholder="Image URL" value={data.image} onChange={handleInputChange} />
+        <select name="category" value={data.category} onChange={handleInputChange} required>
+          {categories.slice(1).map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+        {isEditing ? (
+          <>
+            <button type="button" onClick={saveEdit}>
+              Запази
+            </button>
+            <button type="button" onClick={cancelEdit} className={styles.cancelButton}>
+              Отказажи
+            </button>
+          </>
+        ) : (
+          <button type="submit">Добавете продукт</button>
+        )}
+      </form>
+      <div className={styles.imagePreview}>
+        <h3>Снимка</h3>
+        {data.image ? (
+          <img src={data.image || "/placeholder.svg"} alt="Preview" />
+        ) : (
+          <div className={styles.placeholderImage}>Не е добавен URL за снимка</div>
+        )}
+      </div>
+    </div>
+  )
+
   return (
     <div className={styles.container}>
-      <h2>Manage Menu</h2>
+      <h2>Редактиране на меню</h2>
 
-      {!editingItem ? (
-        <div className={styles.addItemContainer}>
-          <form onSubmit={handleAddItem} className={styles.addItemForm}>
-            <h3>Add New Item</h3>
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-            />
-            <textarea
-              name="description"
-              placeholder="Description"
-              value={formData.description}
-              onChange={handleInputChange}
-              required
-            ></textarea>
-            <input
-              type="number"
-              name="price"
-              placeholder="Price"
-              value={formData.price}
-              onChange={handleInputChange}
-              required
-            />
-            <input
-              type="text"
-              name="image"
-              placeholder="Image URL"
-              value={formData.image}
-              onChange={handleInputChange}
-            />
-            <select name="category" value={formData.category} onChange={handleInputChange} required>
-              {categories.slice(1).map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-            <button type="submit">Add Item</button>
-          </form>
-          <div className={styles.imagePreview}>
-            <h3>Image Preview</h3>
-            {formData.image ? (
-              <img src={formData.image || "/placeholder.svg"} alt="Preview" />
-            ) : (
-              <div className={styles.placeholderImage}>No image URL provided</div>
-            )}
-          </div>
-        </div>
-      ) : (
-        <form className={styles.addItemForm}>
-          <h3>Edit Item</h3>
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={editingItem.name}
-            onChange={handleInputChange}
-            required
-          />
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={editingItem.description}
-            onChange={handleInputChange}
-            required
-          ></textarea>
-          <input
-            type="number"
-            name="price"
-            placeholder="Price"
-            value={editingItem.price}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="text"
-            name="image"
-            placeholder="Image URL (Optional)"
-            value={editingItem.image}
-            onChange={handleInputChange}
-          />
-          <select name="category" value={editingItem.category} onChange={handleInputChange} required>
-            {categories.slice(1).map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <button type="button" onClick={saveEdit}>
-            Save
-          </button>
-          <button type="button" onClick={cancelEdit}>
-            Cancel
-          </button>
-        </form>
-      )}
+      {editingItem ? renderForm(editingItem, true) : renderForm(formData, false)}
 
       <div className={styles.filterContainer}>
         {categories.map((category) => (
@@ -259,32 +233,36 @@ export default function ManageMenu() {
       </div>
 
       <div className={styles.menuList}>
-        <h3>Existing Menu Items</h3>
+        <h3>Същестуващи продукти</h3>
         {selectedCategory === "All" ? (
-          categories.slice(1).map((category) => (
-            <div key={category} className={styles.categorySection}>
-              <h4 className={styles.categoryTitle}>{category}</h4>
-              <div className={styles.categoryItems}>
-                {filteredItems
-                  .filter((item) => item.category === category)
-                  .map((item) => (
-                    <div key={item._id} className={styles.menuItem}>
-                      <img src={item.image || "/placeholder.svg"} alt={item.name} />
-                      <div>
-                        <h4>{item.name}</h4>
-                        <p>{item.description}</p>
-                        <p>Price: ${item.price}</p>
+          // When "All" is selected, show all categories with their items
+          categories
+            .slice(1)
+            .map((category) => (
+              <div key={category} className={styles.categorySection}>
+                <h4 className={styles.categoryTitle}>{category}</h4>
+                <div className={styles.categoryItems}>
+                  {menuItems
+                    .filter((item) => item.category === category)
+                    .map((item) => (
+                      <div key={item._id} className={styles.menuItem}>
+                        <img src={item.image || "/placeholder.svg"} alt={item.name} />
+                        <div>
+                          <h4>{item.name}</h4>
+                          <p>{item.description}</p>
+                          <p>Цена:{item.price} лв</p>
+                        </div>
+                        <button onClick={() => startEditing(item)}>Edit</button>
+                        <button className={styles.deleteButton} onClick={() => handleDelete(item._id)}>
+                          Изтрийте
+                        </button>
                       </div>
-                      <button onClick={() => startEditing(item)}>Edit</button>
-                      <button className={styles.deleteButton} onClick={() => handleDelete(item._id)}>
-                        Delete
-                      </button>
-                    </div>
-                  ))}
+                    ))}
+                </div>
               </div>
-            </div>
-          ))
+            ))
         ) : (
+          // When a specific category is selected, show only items from that category
           <div className={styles.categoryItems}>
             {filteredItems.map((item) => (
               <div key={item._id} className={styles.menuItem}>
@@ -292,17 +270,28 @@ export default function ManageMenu() {
                 <div>
                   <h4>{item.name}</h4>
                   <p>{item.description}</p>
-                  <p>Price: ${item.price}</p>
+                  <p>Цена:{item.price} лв</p>
                 </div>
                 <button onClick={() => startEditing(item)}>Edit</button>
                 <button className={styles.deleteButton} onClick={() => handleDelete(item._id)}>
-                  Delete
+                  Изтрийте
                 </button>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Back button */}
+      <button className={styles.backButton} onClick={goBack} aria-label="Go back">
+        <FaArrowLeft />
+      </button>
+
+      {showScrollTop && (
+        <button className={styles.scrollTopButton} onClick={scrollToTop} aria-label="Scroll to top">
+          <FaArrowUp />
+        </button>
+      )}
     </div>
   )
 }

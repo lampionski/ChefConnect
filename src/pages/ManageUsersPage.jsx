@@ -1,11 +1,13 @@
 "use client"
 
 import { useState, useEffect, useContext } from "react"
-import { FaSearch, FaEdit, FaTrash } from "react-icons/fa"
+import { useNavigate } from "react-router-dom" // Added for navigation
+import { FaSearch, FaEdit, FaTrash, FaArrowLeft } from "react-icons/fa" // Added FaArrowLeft
 import styles from "./ManageUsers.module.css"
 import UserCTX from "../context/UserContext"
 
 const ManageUsersPage = () => {
+  const navigate = useNavigate() // Added for navigation
   const [users, setUsers] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [editingUser, setEditingUser] = useState(null)
@@ -51,7 +53,7 @@ const ManageUsersPage = () => {
       const response = await fetch(`http://localhost:3000/admin/users/${editingUser._id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(editingUser),
         credentials: "include",
@@ -85,8 +87,13 @@ const ManageUsersPage = () => {
     }
   }
 
-  if (loading) return <div>Loading...</div>
-  if (error) return <div>Error: {error}</div>
+  // Added goBack function
+  const goBack = () => {
+    navigate(-1) // Navigate back to previous page
+  }
+
+  if (loading) return <div>Зарежда...</div>
+  if (error) return <div>Грешка: {error}</div>
 
   return (
     <div className={styles.manageUsers}>
@@ -125,7 +132,7 @@ const ManageUsersPage = () => {
       {editingUser && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
-            <h2>Edit User</h2>
+            <h2>Редактиране на Потребител</h2>
             <input
               type="text"
               value={editingUser.fullname}
@@ -137,15 +144,20 @@ const ManageUsersPage = () => {
               onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
             />
             <select value={editingUser.role} onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}>
-              <option value="user">User</option>
-              <option value="worker">Worker</option>
-              <option value="admin">Admin</option>
+              <option value="user">Потребител</option>
+              <option value="worker">Работник</option>
+              <option value="admin">Администратор</option>
             </select>
-            <button onClick={handleSave}>Save</button>
-            <button onClick={() => setEditingUser(null)}>Cancel</button>
+            <button onClick={handleSave}>Запази</button>
+            <button onClick={() => setEditingUser(null)}>Откажи промени</button>
           </div>
         </div>
       )}
+
+      {/* Back button */}
+      <button className={styles.backButton} onClick={goBack} aria-label="Go back">
+        <FaArrowLeft />
+      </button>
     </div>
   )
 }

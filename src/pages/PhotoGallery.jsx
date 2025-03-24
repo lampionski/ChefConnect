@@ -9,7 +9,7 @@ import photo4 from '../assets/images/galleryImg3.jpg';
 function PhotoGallery() {
     return (
         <section className={styles.gallery}>
-            <h2>Photo Gallery</h2>
+            <h2>Снимки на нашите ресторнти</h2>
             <div className={styles.galleryContainer}>
                 <img src={photo2} alt="Dish 1" />
                 <img src={photo3} alt="Dish 2" />

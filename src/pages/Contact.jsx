@@ -1,3 +1,5 @@
+"use client"
+
 import styles from "./Contact.module.css"
 import Swal from "sweetalert2"
 import { FaUser, FaEnvelope, FaCommentAlt } from "react-icons/fa"
@@ -36,27 +38,27 @@ const Contact = () => {
     <div className={styles.pageContainer}>
       <div className={styles.formWrapper}>
         <div className={styles.formContainer}>
-          <h2 className={styles.formTitle}>Contact Us</h2>
+          <h2 className={styles.formTitle}>Свържете се с нас</h2>
           <form onSubmit={onSubmit} className={styles.form}>
             <div className={styles.inputGroup}>
               <FaUser className={styles.inputIcon} />
-              <input type="text" className={styles.input} placeholder="Full Name" name="name" required />
+              <input type="text" className={styles.input} placeholder="Име" name="name" required />
             </div>
             <div className={styles.inputGroup}>
               <FaEnvelope className={styles.inputIcon} />
-              <input type="email" className={styles.input} placeholder="Email Address" name="email" required />
+              <input type="email" className={styles.input} placeholder="Email адрес" name="email" required />
             </div>
             <div className={styles.inputGroup}>
               <textarea
                 name="message"
                 className={`${styles.input} ${styles.textarea}`}
-                placeholder="Your Message"
+                placeholder="Твоето съобщение "
                 required
               ></textarea>
               <FaCommentAlt className={`${styles.inputIcon} ${styles.textareaIcon}`} />
             </div>
             <button type="submit" className={styles.submitButton}>
-              Send Message
+              Изпратете съобщение
             </button>
           </form>
         </div>

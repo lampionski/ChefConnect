@@ -1,13 +1,37 @@
+:root {
+  --primary-color: #ffa500;
+  --secondary-color: #333333;
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --hover-color: #ff8c00;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+}
+
 .messagesContainer {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  background-color: var(--background-color);
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.messagesContainer h2 {
+  color: var(--secondary-color);
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .loading,
-.error {
+.error,
+.noMessages {
   text-align: center;
   margin-top: 20px;
+  color: var(--text-color);
+  font-size: 1.2rem;
 }
 
 .messageList {
@@ -18,49 +42,320 @@
 .messageItem {
   background-color: #f9f9f9;
   border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
-.messageItem h3 {
-  margin-top: 0;
-}
-
-.reservationActions {
-  margin-top: 10px;
-}
-
-.reservationActions button {
-  margin-right: 10px;
-  padding: 5px 10px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.reservationActions button:last-child {
-  background-color: #f44336;
+.messageItem:hover {
+  transform: translateY(-5px);
 }
 
 .userContainer {
   display: flex;
-  flex-flow: row nowrap;
   align-items: center;
   gap: 16px;
   margin-bottom: 16px;
 }
 
 .userContainer img {
-  width: 50px;
-  height: 50px;
-  border-radius: 100%;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
-.userContainer p {
-  margin: 0px;
-  font-weight: bold;
-  font-size: 20px;
+.userInfo {
+  flex-grow: 1;
 }
+
+.userName {
+  margin: 0;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: var(--secondary-color);
+}
+
+.messageTitle {
+  margin: 5px 0 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+.messageContent {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.dismissButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #999;
+  transition: color 0.3s ease;
+}
+
+.dismissButton:hover {
+  color: var(--primary-color);
+}
+
+/* Reservation details styles */
+.reservationDetails {
+  margin-bottom: 20px;
+}
+
+.welcomeMessage {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  margin-bottom: 15px;
+  color: var(--text-color);
+}
+
+.reservationInfo {
+  background-color: rgba(255, 165, 0, 0.1);
+  border-left: 4px solid var(--primary-color);
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.infoItem:last-child {
+  margin-bottom: 0;
+}
+
+.infoIcon {
+  color: var(--primary-color);
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.infoItem span {
+  display: inline-block;
+}
+
+.additionalInfo {
+  font-style: italic;
+  color: #666;
+  margin-top: 15px;
+}
+
+.rejectedMessage {
+  background-color: rgba(244, 67, 54, 0.1);
+  border-left: 4px solid #f44336;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.rejectionIcon {
+  color: #f44336;
+  font-size: 1.5rem;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.rejectedMessage p {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.reservationActions,
+.taskActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.reservationActions button,
+.taskActions button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.cancelButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #d32f2f;
+}
+
+.contactButton {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.contactButton:hover {
+  background-color: var(--hover-color);
+}
+
+.completeButton {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.completeButton:hover {
+  background-color: #218838;
+}
+
+/* Task details styles */
+.taskDetails {
+  margin-bottom: 20px;
+}
+
+.taskActive,
+.taskOverdue {
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.taskActive {
+  background-color: rgba(40, 167, 69, 0.1);
+  border-left: 4px solid var(--success-color);
+}
+
+.taskOverdue {
+  background-color: rgba(255, 193, 7, 0.1);
+  border-left: 4px solid var(--warning-color);
+}
+
+.taskIcon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.taskActive .taskIcon {
+  color: var(--success-color);
+}
+
+.taskOverdue .taskIcon {
+  color: var(--warning-color);
+}
+
+.taskActive p,
+.taskOverdue p {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.taskDescription {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  border: 1px solid #eee;
+}
+
+.taskDescription p {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.taskInfo {
+  background-color: rgba(255, 165, 0, 0.1);
+  border-left: 4px solid var(--primary-color);
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+  .messagesContainer {
+    padding: 15px;
+  }
+
+  .messagesContainer h2 {
+    font-size: 1.8rem;
+  }
+
+  .userContainer img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .userName {
+    font-size: 1.1rem;
+  }
+
+  .messageTitle {
+    font-size: 0.9rem;
+  }
+
+  .messageContent,
+  .welcomeMessage,
+  .rejectedMessage p,
+  .taskActive p,
+  .taskOverdue p,
+  .taskDescription p {
+    font-size: 1rem;
+  }
+
+  .infoItem {
+    font-size: 0.9rem;
+  }
+
+  .reservationActions,
+  .taskActions {
+    flex-direction: column;
+  }
+
+  .reservationActions button,
+  .taskActions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .messagesContainer {
+    padding: 10px;
+  }
+
+  .messagesContainer h2 {
+    font-size: 1.5rem;
+  }
+
+  .userContainer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .userInfo {
+    margin-top: 10px;
+  }
+}
+

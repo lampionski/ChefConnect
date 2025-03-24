@@ -4,10 +4,14 @@
   align-items: center;
   padding: 15px 20px;
   background-color: #1b1921;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0; /* Ensure it starts from the left edge */
+  width: 100%;
+  box-sizing: border-box; /* Include padding in width calculation */
   z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: 70px; /* Set explicit height to match the original header */
 }
 
 .logoWithPhone {
@@ -40,7 +44,7 @@
 .phoneIcon {
   font-size: 16px;
   margin-right: 8px;
-  color: #ff5722;
+  color: #ffa500;
 }
 
 .nav {
@@ -58,7 +62,7 @@
 }
 
 .nav a:hover {
-  color: #ff5722;
+  color: #ffa500;
 }
 
 .languageToggle {
@@ -75,17 +79,20 @@
 
 .languageToggle:hover {
   opacity: 0.8;
-  color: #ff5722;
+  color: #ffa500;
 }
 
 .userMenu {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .menuIcon {
   font-size: 24px;
   color: #fff;
   cursor: pointer;
+  padding: 5px;
 }
 
 .dropdownMenu {
@@ -114,6 +121,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
 }
 
 .menuItem:hover {
@@ -121,7 +129,7 @@
 }
 
 .signOut {
-  background-color: #ff5722;
+  background-color: #ffa500;
   border: none;
   border-radius: 5px;
   padding: 12px;
@@ -134,11 +142,11 @@
 }
 
 .signOut:hover {
-  background-color: #f84a16;
+  background-color: #ffa500;
 }
 
 .signUpButton {
-  background-color: #ff5722;
+  background-color: #ffa500;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -149,7 +157,7 @@
 }
 
 .signUpButton:hover {
-  background-color: #ff5722;
+  background-color: #ffa500;
 }
 
 .mobileMenuToggle {
@@ -159,11 +167,90 @@
   color: #fff;
   font-size: 24px;
   cursor: pointer;
+  margin-left: auto; /* Push to the right */
+  padding: 5px;
+  z-index: 1001; /* Ensure it's above other elements */
 }
 
+.unreadBadge {
+  background-color: #ff4d4f;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
+/* Mobile menu item styles */
+.mobileMenuItem {
+  width: 100%;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.mobileMenuItem:hover {
+  color: #ffa500;
+}
+
+.mobileSignOut {
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #ffa500;
+  width: 100%;
+}
+
+/* Mobile user menu styles */
+.mobileUserMenu {
+  width: 100%;
+  margin-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 10px;
+}
+
+.mobileUserMenuHeader {
+  color: #ffa500;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 5px 0;
+  font-size: 16px;
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
   .header {
+    padding: 15px 15px; /* Slightly reduce padding on mobile */
     flex-wrap: wrap;
+    height: 60px; /* Smaller height on mobile */
+  }
+
+  .logoWithPhone {
+    max-width: 70%; /* Limit width to ensure space for burger button */
+  }
+
+  .phoneNumber {
+    display: none; /* Hide phone number on very small screens */
+  }
+
+  .mobileMenuToggle {
+    display: block;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   .nav {
@@ -185,27 +272,45 @@
 
   .nav a,
   .languageToggle,
-  .userMenu,
   .signUpButton {
     width: 100%;
     padding: 10px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  .dropdownMenu {
-    position: static;
-    width: 100%;
-    box-shadow: none;
-    padding: 0;
+  .userMenu {
+    display: none; /* Hide the desktop user menu on mobile */
   }
 
-  .menuItem,
-  .signOut {
+  .mobileUserMenu .menuItem {
     padding: 10px 0;
+    margin-left: 15px; /* Add some indentation for user menu items */
   }
 
-  .mobileMenuToggle {
-    display: block;
+  .mobileUserMenu .signOut {
+    margin-left: 15px;
+    width: calc(100% - 15px);
+  }
+
+  .signUpButton {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .signUpButton {
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .logoWithPhone {
+    max-width: 60%; /* Further limit width on very small screens */
+  }
+
+  .logo {
+    height: 35px; /* Slightly smaller logo on very small screens */
   }
 }
 
@@ -218,73 +323,14 @@
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-.header {
-  position: relative;
-  z-index: 1000;
-}
-
-.nav {
-  display: flex;
-  align-items: center;
+/* Add headerSpacer for fixed header */
+.headerSpacer {
+  height: 70px; /* Should match header height */
 }
 
 @media (max-width: 768px) {
-  .nav {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    flex-direction: column;
-   
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: none;
+  .headerSpacer {
+    height: 60px; /* Adjust for mobile header height */
   }
-
-  .navOpen {
-    display: flex;
-  }
-
-  .nav a,
-  .nav .userMenu {
-    width: 100%;
-    padding: 10px;
-    text-align: center;
-  }
-
-  .dropdownMenu {
-    position: static;
-    width: 100%;
-    box-shadow: none;
-  }
-}
-
-
-
-
-.unreadBadge {
-  background-color: #ff4d4f;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  position: absolute;
-  top: -5px;
-  right: -5px;
-}
-
-.menuItem {
-  position: relative;
 }
 

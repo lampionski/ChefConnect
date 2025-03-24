@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #1b1921;
+  background-color: #333333;
   padding: 20px;
 }
 
@@ -50,9 +50,9 @@
 
 .input:focus {
   outline: none;
-  border-color: #ff5722;
+  border-color: #ffa500;
   background-color: white;
-  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.1);
+  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.1);
 }
 
 .inputIcon {
@@ -60,7 +60,7 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #999;
+  color: #ffa500;
   font-size: 16px;
 }
 
@@ -78,7 +78,7 @@
 .submitButton {
   width: 100%;
   padding: 12px;
-  background-color: #ff5722;
+  background-color: #ffa500;
   color: white;
   border: none;
   border-radius: 8px;
@@ -89,7 +89,7 @@
 }
 
 .submitButton:hover {
-  background-color: #f4511e;
+  background-color: #ff8c00;
   transform: translateY(-1px);
 }
 
@@ -110,3 +110,4 @@
     font-size: 14px;
   }
 }
+

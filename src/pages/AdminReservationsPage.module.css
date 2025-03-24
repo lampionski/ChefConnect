@@ -85,6 +85,32 @@
   cursor: not-allowed;
 }
 
+/* Back Button */
+.backButton {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.backButton:hover {
+  background-color: var(--hover-color);
+  transform: translateY(-3px);
+}
+
 @media (max-width: 768px) {
   .adminReservationsContainer h2 {
     font-size: 1.6rem;
@@ -97,6 +123,14 @@
 
   .actionButton {
     font-size: 1rem;
+  }
+
+  .backButton {
+    width: 40px;
+    height: 40px;
+    bottom: 20px;
+    left: 20px;
+    font-size: 1.2rem;
   }
 }
 

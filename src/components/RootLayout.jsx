@@ -3,6 +3,7 @@ import { Outlet, useLoaderData } from "react-router-dom";
 import Header from "./Header.jsx";
 import { BiLoader } from "react-icons/bi";
 import UserCTX from "../context/UserContext.jsx";
+import classes from "./RootLayout.module.css"
 
 
 export default function RootLayout(){
@@ -19,7 +20,7 @@ export default function RootLayout(){
     return <>
     <div>
       <Header />
-      <main>
+      <main className={classes.globalContainer}>
         <Outlet />
       </main>
     </div>

@@ -1,27 +1,27 @@
 /* General Styles */
 .homepage {
-    font-family: 'Arial', sans-serif;
+    font-family: "Arial", sans-serif;
     color: #333;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-/* Hero Section */
-.hero {
+  }
+  
+  /* Hero Section */
+  .hero {
     position: relative;
     width: 100%;
     height: 500px;
     overflow: hidden;
-}
-
-.heroImage {
+  }
+  
+  .heroImage {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.overlay {
+  }
+  
+  .overlay {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -31,143 +31,155 @@
     background: rgba(0, 0, 0, 0.5);
     padding: 20px;
     border-radius: 10px;
-}
-
-.overlay h1 {
+  }
+  
+  .overlay h1 {
     font-size: 3rem;
     margin-bottom: 10px;
-}
-
-.overlay p {
+  }
+  
+  .overlay p {
     font-size: 1.2rem;
     color: #fff;
-}
-
-.menuButton {
+  }
+  
+  .menuButton {
     margin-top: 20px;
     padding: 10px 20px;
     font-size: 1rem;
     color: #fff;
-    background-color: #ff5722;
+    background-color: #ffa500;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-}
-
-.menuButton:hover {
+  }
+  
+  .menuButton:hover {
     background-color: #e64a19;
-}
-
-/* About Section */
-.about {
+  }
+  
+  /* About Section */
+  .about {
     padding: 50px 20px;
     text-align: center;
     background-color: #f9f9f9;
-}
-
-.about h2 {
+  }
+  
+  .about h2 {
     font-size: 2rem;
     margin-bottom: 20px;
-}
-
-.about p {
+  }
+  
+  .about p {
     font-size: 1.1rem;
     max-width: 800px;
     margin: auto;
     line-height: 1.6;
-}
-
-/* Photo Gallery Section */
-.gallery {
+  }
+  
+  /* Photo Gallery Section */
+  .gallery {
     padding: 50px 20px;
     text-align: center;
-}
-
-.gallery h2 {
+  }
+  
+  .gallery h2 {
     font-size: 2rem;
     margin-bottom: 20px;
-}
-
-.gallery-container {
+  }
+  
+  .gallery-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
     padding: 0 20px;
-}
-
-.gallery-container img {
+  }
+  
+  .gallery-container img {
     width: 100%;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Location Section */
-.location {
+  }
+  
+  /* Location Section */
+  .location {
     padding: 50px 20px;
     text-align: center;
     background-color: #f9f9f9;
-}
-
-.location h2 {
+  }
+  
+  .location h2 {
     font-size: 2rem;
     margin-bottom: 20px;
-}
-
-.location p {
+  }
+  
+  .location p {
     font-size: 1.2rem;
     margin-bottom: 20px;
-}
-
-.map-container {
+  }
+  
+  .map-container {
     width: 100%;
     height: 500px;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.map-container iframe {
+  }
+  
+  .map-container iframe {
     width: 100%;
     height: 100%;
     border: 0;
-}
-
-/* Footer */
-.footer {
+  }
+  
+  /* Footer */
+  .footer {
     text-align: center;
     padding: 20px;
     background-color: #333;
     color: #fff;
     font-size: 0.9rem;
-}
-
-.footer p{
+  }
+  
+  .footer p {
     color: #fff;
-}
-
-
-.scrollToTop {
+  }
+  
+  /* Scroll to Top Button */
+  .scrollToTop {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 30px;
+    right: 30px;
     width: 50px;
     height: 50px;
-    background: #ff5722;
+    border-radius: 50%;
+    background-color: #ffa500;
     color: white;
     border: none;
-    border-radius: 50%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    font-size: 24px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    opacity: 2;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.scrollToTop:hover {
-    opacity: 1;
-    transform: scale(1.1);
-}
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .scrollToTop:hover {
+    background-color: #ff8c00;
+    transform: translateY(-3px);
+  }
+  
+  @media (max-width: 768px) {
+    .scrollToTop {
+      width: 40px;
+      height: 40px;
+      bottom: 20px;
+      right: 20px;
+      font-size: 1.2rem;
+    }
+  }
+  
+  

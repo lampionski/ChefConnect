@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import classes from "./ProductsPage.module.css"
+import { FaArrowUp } from "react-icons/fa"
 
 export default function ProductsPage() {
   const [menuItems, setMenuItems] = useState([])
@@ -9,6 +10,7 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [category, setCategory] = useState("")
+  const [showScrollTop, setShowScrollTop] = useState(false)
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -42,7 +44,26 @@ export default function ProductsPage() {
       }
     }
     fetchCategories()
+
+    // Add scroll event listener
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true)
+      } else {
+        setShowScrollTop(false)
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
 
   const sortedMenuItems = [...menuItems].sort((a, b) => {
     if (category === "") {
@@ -52,7 +73,7 @@ export default function ProductsPage() {
   })
 
   if (loading) {
-    return <p className={classes.loading}>Loading...</p>
+    return <p className={classes.loading}>Зарежда...</p>
   }
 
   if (error) {
@@ -61,7 +82,7 @@ export default function ProductsPage() {
 
   return (
     <div className={classes.container}>
-      <h2>Product List</h2>
+      <h2>Меню</h2>
       <div className={classes.filterContainer}>
         {categories.map((cat) => (
           <button
@@ -76,7 +97,7 @@ export default function ProductsPage() {
         ))}
       </div>
       {sortedMenuItems.length === 0 ? (
-        <p>No items available in this category.</p>
+        <p>Няма продукт в тази категория.</p>
       ) : (
         <ul className={classes.menuList}>
           {category === "" ? (
@@ -91,7 +112,7 @@ export default function ProductsPage() {
                         <img src={item.image || "/placeholder.svg"} alt={item.name} className={classes.menuItemImage} />
                         <h4>{item.name}</h4>
                         <p>{item.description}</p>
-                        <p>${item.price}</p>
+                        <p>{item.price}лв</p>
                       </li>
                     ))}
                 </ul>
@@ -105,7 +126,7 @@ export default function ProductsPage() {
                     <img src={item.image || "/placeholder.svg"} alt={item.name} className={classes.menuItemImage} />
                     <h4>{item.name}</h4>
                     <p>{item.description}</p>
-                    <p>${item.price}</p>
+                    <p>{item.price}лв</p>
                   </li>
                 ))}
               </ul>
@@ -113,6 +134,15 @@ export default function ProductsPage() {
           )}
         </ul>
       )}
+
+      {showScrollTop && (
+        <button className={classes.scrollTopButton} onClick={scrollToTop} aria-label="Scroll to top">
+          <FaArrowUp />
+        </button>
+      )}
+
+      
+
     </div>
   )
 }

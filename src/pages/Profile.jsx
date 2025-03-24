@@ -136,7 +136,7 @@ const Profile = () => {
 
   return (
     <div className={styles.profileContainer}>
-      <h1>User Profile</h1>
+      <h1>Потребителски Профил</h1>
       <div className={styles.profileContent}>
         <div className={styles.profilePhoto}>
           <img src={user.photo || "/placeholder.svg"} alt="Profile" />
@@ -149,7 +149,7 @@ const Profile = () => {
         </div>
         <form onSubmit={handleSubmit} className={styles.profileForm}>
           <div className={styles.formGroup}>
-            <label>Full Name:</label>
+            <label>Име:</label>
             <input type="text" name="fullname" value={user.fullname} disabled={true} />
           </div>
           <div className={styles.formGroup}>
@@ -157,18 +157,18 @@ const Profile = () => {
             <input type="email" name="email" value={user.email} disabled={true} />
           </div>
           <div className={styles.formGroup}>
-            <label>Username:</label>
+            <label>Прякор:</label>
             <input
               type="text"
               name="username"
               value={user.username}
               onChange={handleInputChange}
               disabled={!isEditing}
-              placeholder="Set your username"
+              placeholder="Добавете прякор"
             />
           </div>
           <div className={styles.formGroup}>
-            <label>Birth Date:</label>
+            <label>Рожденна Дата:</label>
             <input
               type="date"
               name="birthDate"
@@ -178,18 +178,18 @@ const Profile = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label>Address:</label>
+            <label>адрес:</label>
             <input
               type="text"
               name="address"
               value={user.address}
               onChange={handleInputChange}
               disabled={!isEditing}
-              placeholder="Enter your address"
+              placeholder="Добавете адрес"
             />
           </div>
           <div className={styles.formGroup}>
-            <label>Phone Number:</label>
+            <label>Телефонен номер:</label>
             <input
               type="tel"
               name="phoneNumber"
@@ -202,15 +202,15 @@ const Profile = () => {
           <div className={styles.buttonGroup}>
             {isEditing ? (
               <button className={styles.saveButton}>
-                Save Changes
+                Запази промени
               </button>
             ) : (
               <button type="button" onClick={e => (e.preventDefault(), setIsEditing(true))} className={styles.editButton}>
-                Edit Profile
+                Редактирай профила
               </button>
             )}
             <button type="button" onClick={e => (e.preventDefault(), setShowPasswordModal(true))} className={styles.changePasswordButton}>
-              <FaLock /> Change Password
+              <FaLock /> Редактирай парола
             </button>
           </div>
         </form>
@@ -219,10 +219,10 @@ const Profile = () => {
       {showPasswordModal && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
-            <h2>Change Password</h2>
+            <h2>Промяна на парола</h2>
             <form onSubmit={handlePasswordChange}>
               <div className={styles.formGroup}>
-                <label>New Password:</label>
+                <label>Нова парола:</label>
                 <input
                   type="password"
                   value={newPassword}
@@ -232,7 +232,7 @@ const Profile = () => {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label>Confirm Password:</label>
+                <label>Потвърдете новата парола:</label>
                 <input
                   type="password"
                   value={confirmPassword}
@@ -243,10 +243,10 @@ const Profile = () => {
               </div>
               <div className={styles.buttonGroup}>
                 <button type="submit" className={styles.changePasswordButton}>
-                  Change Password
+                Промяна на парола
                 </button>
                 <button type="button" onClick={() => setShowPasswordModal(false)} className={styles.cancelButton}>
-                  Cancel
+                  Откажи
                 </button>
               </div>
             </form>

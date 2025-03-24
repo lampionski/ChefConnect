@@ -8,6 +8,7 @@ import AboutUs from "./AboutUs"
 import PhotoGallery from "./PhotoGallery"
 import Location from "./Location"
 import UserCTX from "../context/UserContext"
+import { FaArrowUp } from "react-icons/fa" // Import the arrow icon
 
 export function HomePage() {
   const navigate = useNavigate()
@@ -49,7 +50,7 @@ export function HomePage() {
 
       {isVisible && (
         <button className={styles.scrollToTop} onClick={scrollToTop} aria-label="Scroll to top">
-          ↑
+          <FaArrowUp />
         </button>
       )}
 

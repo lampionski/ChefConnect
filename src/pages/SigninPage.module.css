@@ -39,7 +39,7 @@
 }
 
 .activeTab {
-  color: #ff5722;
+  color: #ff8c00;
   font-weight: 500;
 }
 
@@ -50,7 +50,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #ff5722;
+  background-color: #ff8c00;
 }
 
 .form {
@@ -81,7 +81,7 @@
 
 .input:focus {
   outline: none;
-  border-color: #ff5722;
+  border-color: #ff8c00;
   background-color: white;
   box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.1);
 }
@@ -98,7 +98,7 @@
 .submitButton {
   width: 100%;
   padding: 12px;
-  background-color: #ff5722;
+  background-color: #ff8c00;
   color: white;
   border: none;
   border-radius: 8px;
@@ -110,7 +110,7 @@
 }
 
 .submitButton:hover {
-  background-color: #f4511e;
+  background-color: #ff8c00;
   transform: translateY(-1px);
 }
 

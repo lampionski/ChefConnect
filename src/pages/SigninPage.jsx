@@ -82,13 +82,13 @@ const SigninPage = () => {
               className={`${styles.tabButton} ${!isLogin ? styles.activeTab : ""}`}
               onClick={() => setIsLogin(false)}
             >
-              Sign Up
+              Създайте акаунт
             </button>
             <button
               className={`${styles.tabButton} ${isLogin ? styles.activeTab : ""}`}
               onClick={() => setIsLogin(true)}
             >
-              Sign In
+              Влезте в акаунт
             </button>
           </div>
 
@@ -103,7 +103,7 @@ const SigninPage = () => {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Username"
+                  placeholder="Име"
                   required
                   className={styles.input}
                 />
@@ -126,7 +126,7 @@ const SigninPage = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
+                placeholder="Парола"
                 required
                 className={styles.input}
               />
@@ -138,14 +138,14 @@ const SigninPage = () => {
                   type="password"
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
-                  placeholder="Repeat Password"
+                  placeholder="Повторете парола"
                   required
                   className={styles.input}
                 />
               </div>
             )}
             <button type="submit" className={styles.submitButton}>
-              {isLogin ? "Sign In" : "Sign Up"}
+              {isLogin ? "Продължете" : "Продължете"}
             </button>
           </form>
         </div>

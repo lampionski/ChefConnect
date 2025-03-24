@@ -13,17 +13,22 @@ export default function ReservationsPage() {
   if (!user) {
     return (
       <div className={styles.container}>
-        <h2>Please log in to make a reservation</h2>
-        <button className={styles.loginButton} onClick={() => navigate("/signin")}>
-          Log In / Create Account
-        </button>
+        <div className={styles.formContainer}>
+          <h2 className={styles.formTitle}>Моля влезте в акаунта си, за да направите резервация</h2>
+          <button className={styles.loginButton} onClick={() => navigate("/signin")}>
+            Вход / Създайте акаунт
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
     <div className={styles.container}>
-      <ReservationForm userId={user._id} />
+      <div className={styles.formContainer}>
+        <h2 className={styles.formTitle}>Направете резервация</h2>
+        <ReservationForm userId={user._id} />
+      </div>
     </div>
   )
 }
