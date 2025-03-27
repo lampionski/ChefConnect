@@ -3,6 +3,7 @@
 import { useState, useContext, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import { FaPhoneAlt, FaBars, FaUserCog, FaSignOutAlt, FaEnvelope } from "react-icons/fa"
+import { API_BASE_URL } from '../api';
 import UserCTX from "../context/UserContext"
 import styles from "./Header.module.css"
 import logo from "../assets/logo.png"
@@ -33,7 +34,7 @@ export default function Header() {
   //   if (userData.user) {
   //     const fetchUnreadMessages = async () => {
   //       try {
-  //         const response = await fetch(`http://localhost:3000/unread-messages/${userData.user._id}`, {
+  //         const response = await fetch(`${API_BASE_URL}/unread-messages/${userData.user._id}`, {
   //           credentials: "include",
   //         })
   //         if (response.ok) {
@@ -49,7 +50,7 @@ export default function Header() {
   // }, [userData.user])
 
   const logout = async () => {
-    await fetch("http://localhost:3000/logout", { credentials: "include" })
+    await fetch(`${API_BASE_URL}/logout`, { credentials: "include" })
     userData.setUser(null)
     navigate("/")
   }

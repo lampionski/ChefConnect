@@ -5,13 +5,14 @@ import { useNavigate } from "react-router-dom"
 import styles from "./AdminPanel.module.css"
 import UserCTX from "../context/UserContext"
 import { FaUtensils, FaCalendarAlt, FaUsers, FaSignOutAlt, FaUserTie } from "react-icons/fa"
+import { API_BASE_URL } from '../api';
 
 const AdminDashboard = () => {
   const userData = useContext(UserCTX)
   const navigate = useNavigate()
 
   const logout = async () => {
-    await fetch("http://localhost:3000/logout", { credentials: "include" })
+    await fetch(`${API_BASE_URL}/logout`, { credentials: "include" })
     userData.setUser(null)
     navigate("/")
   }

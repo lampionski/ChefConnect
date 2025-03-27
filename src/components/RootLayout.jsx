@@ -4,6 +4,8 @@ import Header from "./Header.jsx";
 import { BiLoader } from "react-icons/bi";
 import UserCTX from "../context/UserContext.jsx";
 import classes from "./RootLayout.module.css"
+import { API_BASE_URL } from '../api';
+import Footer from "./Footer"
 
 
 export default function RootLayout(){
@@ -23,12 +25,13 @@ export default function RootLayout(){
       <main className={classes.globalContainer}>
         <Outlet />
       </main>
+      <Footer />
     </div>
     </>
 }
 
 export async function loader(){try{
-  const response = await fetch("http://localhost:3000/user", {credentials:"include"})
+  const response = await fetch(`${API_BASE_URL}/user`, {credentials:"include"})
   const user = await response.json();
   return user;
 }catch{}

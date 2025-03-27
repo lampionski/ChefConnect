@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom" // Added useNavigate
 import styles from "./ManageMenu.module.css"
 import { FaArrowUp, FaArrowLeft } from "react-icons/fa" // Added FaArrowLeft
+import { API_BASE_URL } from '../api';
 
 export default function ManageMenu() {
   const navigate = useNavigate() // Added for navigation
@@ -26,8 +27,8 @@ export default function ManageMenu() {
     const fetchData = async () => {
       try {
         const [menuResponse, categoryResponse] = await Promise.all([
-          fetch("http://localhost:3000/get-menu"),
-          fetch("http://localhost:3000/get-categories"),
+          fetch(`${API_BASE_URL}/get-menu`),
+          fetch(`${API_BASE_URL}/get-categories`),
         ])
 
         if (!menuResponse.ok || !categoryResponse.ok) {
@@ -88,7 +89,7 @@ export default function ManageMenu() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/add-menu-item", {
+      const response = await fetch(`${API_BASE_URL}/add-menu-item`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -122,7 +123,7 @@ export default function ManageMenu() {
 
   const saveEdit = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/update-menu-item/${editingItem._id}`, {
+      const response = await fetch(`${API_BASE_URL}/update-menu-item/${editingItem._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editingItem),
@@ -148,7 +149,7 @@ export default function ManageMenu() {
     if (!window.confirm("Are you sure you want to delete this item?")) return
 
     try {
-      const response = await fetch(`http://localhost:3000/delete-menu-item/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/delete-menu-item/${id}`, {
         method: "DELETE",
       })
 

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import UserCTX from "../context/UserContext"
 import styles from "./AdminReservationsPage.module.css"
 import { FaCheck, FaTimes, FaArrowLeft } from "react-icons/fa" // Added FaArrowLeft
+import { API_BASE_URL } from '../api';
 
 const AdminReservationsPage = () => {
   const [reservations, setReservations] = useState([])
@@ -26,7 +27,7 @@ const AdminReservationsPage = () => {
 
     const fetchReservations = async () => {
       try {
-        const response = await fetch("http://localhost:3000/admin/reservations", {
+        const response = await fetch(`${API_BASE_URL}/admin/reservations`, {
           credentials: "include",
         })
         if (!response.ok) {
@@ -47,7 +48,7 @@ const AdminReservationsPage = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:3000/admin/reservations/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/reservations/${id}`, {
         method: "PUT",
         credentials: "include",
         headers: {

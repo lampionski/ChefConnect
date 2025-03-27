@@ -16,6 +16,7 @@ import {
   FaHistory,
   FaArrowLeft, // Added FaArrowLeft
 } from "react-icons/fa"
+import { API_BASE_URL } from '../api';
 
 const ManageWorkersPage = () => {
   const [workers, setWorkers] = useState([])
@@ -50,7 +51,7 @@ const ManageWorkersPage = () => {
     // Fetch workers
     const fetchWorkers = async () => {
       try {
-        const response = await fetch("http://localhost:3000/admin/workers", {
+        const response = await fetch(`${API_BASE_URL}/admin/workers`, {
           credentials: "include",
         })
 
@@ -74,7 +75,7 @@ const ManageWorkersPage = () => {
   const fetchWorkerTasks = async (workerId) => {
     setTasksLoading(true)
     try {
-      const response = await fetch(`http://localhost:3000/admin/worker-tasks/${workerId}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/worker-tasks/${workerId}`, {
         credentials: "include",
       })
 
@@ -124,7 +125,7 @@ const ManageWorkersPage = () => {
       // Format the deadline with time
       const deadlineWithTime = `${taskForm.deadline}T${taskForm.deadlineTime}`
 
-      const response = await fetch("http://localhost:3000/admin/assign-task", {
+      const response = await fetch(`${API_BASE_URL}/admin/assign-task`, {
         method: "POST",
         credentials: "include",
         headers: {

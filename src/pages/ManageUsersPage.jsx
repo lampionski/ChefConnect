@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom" // Added for navigation
 import { FaSearch, FaEdit, FaTrash, FaArrowLeft } from "react-icons/fa" // Added FaArrowLeft
 import styles from "./ManageUsers.module.css"
 import UserCTX from "../context/UserContext"
+import { API_BASE_URL } from '../api';
 
 const ManageUsersPage = () => {
   const navigate = useNavigate() // Added for navigation
@@ -22,7 +23,7 @@ const ManageUsersPage = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true)
-      const response = await fetch("http://localhost:3000/admin/users", {
+      const response = await fetch(`${API_BASE_URL}/admin/users`, {
         credentials: "include",
       })
       if (!response.ok) {
@@ -50,7 +51,7 @@ const ManageUsersPage = () => {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/admin/users/${editingUser._id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/users/${editingUser._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -72,7 +73,7 @@ const ManageUsersPage = () => {
   const handleDelete = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        const response = await fetch(`http://localhost:3000/admin/users/${userId}`, {
+        const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
           method: "DELETE",
           credentials: "include",
         })

@@ -4,6 +4,7 @@ import { useState, useEffect, useContext, useCallback } from "react"
 import { FaCamera, FaLock } from "react-icons/fa"
 import styles from "./Profile.module.css"
 import UserCTX from "../context/UserContext"
+import { API_BASE_URL } from '../api';
 
 const Profile = () => {
   const { user: contextUser } = useContext(UserCTX)
@@ -23,7 +24,7 @@ const Profile = () => {
 
   const fetchUserData = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:3000/user-profile", {
+      const response = await fetch(`${API_BASE_URL}/user-profile`, {
         credentials: "include",
       })
       if (response.ok) {
@@ -70,7 +71,7 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await fetch("http://localhost:3000/update-profile", {
+      const response = await fetch(`${API_BASE_URL}/update-profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +110,7 @@ const Profile = () => {
       return
     }
     try {
-      const response = await fetch("http://localhost:3000/change-password", {
+      const response = await fetch(`${API_BASE_URL}/change-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

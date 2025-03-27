@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import styles from "../pages/ReservationsPage.module.css"
 import { FaCalendarAlt, FaClock, FaUsers } from "react-icons/fa"
+import { API_BASE_URL } from '../api';
 
 export default function ReservationForm({ userId }) {
   const [date, setDate] = useState("")
@@ -70,7 +71,7 @@ export default function ReservationForm({ userId }) {
       // Extract hour from time string (e.g., "14:30" -> 14)
       const hour = Number.parseInt(time.split(":")[0], 10)
 
-      const response = await fetch("http://localhost:3000/reservation-request", {
+      const response = await fetch(`${API_BASE_URL}/reservation-request`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

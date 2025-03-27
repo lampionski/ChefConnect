@@ -1,37 +1,160 @@
 .pageContainer {
-  min-height: 100vh;
+  min-height: auto; /* Remove min-height to avoid forcing scrolling */
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #333333;
-  padding: 20px;
+  background-color: #e0e0e0;
+  padding: 30px 20px; /* Reduced padding */
 }
 
-.formWrapper {
+.contactWrapper {
   width: 100%;
-  max-width: 400px;
+  max-width: 900px; /* Slightly smaller max-width */
   margin: 0 auto;
+  display: flex;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
+/* Make the contact info section more compact */
+.contactInfo {
+  flex: 1;
+  background-color: #1b1921;
+  color: white;
+  padding: 25px; /* Reduced padding */
+  position: relative;
+  overflow: hidden;
+}
+
+.contactInfo::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("/placeholder.svg?height=500&width=500") center / cover no-repeat;
+  opacity: 0.05;
+  z-index: 0;
+}
+
+.contactInfo > * {
+  position: relative;
+  z-index: 1;
+}
+
+.contactInfo h2 {
+  font-size: 22px; /* Smaller font size */
+  margin-bottom: 15px; /* Reduced margin */
+  color: #ffa500;
+  position: relative;
+}
+
+.contactInfo h2::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: #ffa500;
+}
+
+.contactInfo > p {
+  margin-bottom: 20px; /* Reduced margin */
+  line-height: 1.5; /* Slightly tighter line height */
+  color: #e0e0e0;
+  font-size: 14px; /* Smaller font size */
+}
+
+/* Fixed the info item layout for consistent alignment */
+.infoItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 15px; /* Reduced margin */
+}
+
+/* Fixed width container for icons to ensure consistent alignment */
+.infoIcon {
+  font-size: 16px; /* Smaller icon */
+  color: #ffa500;
+  margin-right: 12px;
+  margin-top: 2px;
+  flex-shrink: 0; /* Prevent icon from shrinking */
+  width: 16px; /* Fixed width for consistent alignment */
+  text-align: center; /* Center the icon in its container */
+}
+
+/* Fixed the text container to ensure consistent alignment */
+.infoItem > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.infoItem h3 {
+  font-size: 16px; /* Smaller font size */
+  margin-bottom: 3px; /* Reduced margin */
+  font-weight: 600;
+  color: #e0e0e0;
+  text-align: left;
+}
+
+.infoItem p {
+  color: #e0e0e0;
+  font-size: 14px; /* Smaller font size */
+}
+
+.workingHours {
+  margin-top: 20px; /* Reduced margin */
+  padding-top: 15px; /* Reduced padding */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.workingHours h3 {
+  font-size: 16px; /* Smaller font size */
+  margin-bottom: 8px; /* Reduced margin */
+  color: #ffa500;
+}
+
+.workingHours p {
+  margin-bottom: 3px; /* Reduced margin */
+  color: #e0e0e0;
+  font-size: 14px; /* Smaller font size */
+}
+
+/* Make the form more compact */
 .formContainer {
+  flex: 1;
+  padding: 25px; /* Reduced padding */
   background: white;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .formTitle {
-  font-size: 24px;
+  font-size: 22px; /* Smaller font size */
   font-weight: 600;
   color: #333;
-  margin-bottom: 24px;
+  margin-bottom: 20px; /* Reduced margin */
   text-align: center;
+  position: relative;
+}
+
+.formTitle::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px; /* Smaller width */
+  height: 2px; /* Thinner line */
+  background-color: #ffa500;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px; /* Reduced gap */
 }
 
 .inputGroup {
@@ -40,74 +163,141 @@
 
 .input {
   width: 100%;
-  padding: 12px 12px 12px 40px;
+  padding: 12px 12px 12px 40px; /* Reduced padding */
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 14px; /* Smaller font size */
   background-color: #f8f9fa;
   transition: all 0.3s ease;
+  box-sizing: border-box; /* Ensure padding is included in width */
 }
 
 .input:focus {
   outline: none;
   border-color: #ffa500;
   background-color: white;
-  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.1);
+  box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.1);
 }
 
+/* Fixed the icon positioning in the form */
 .inputIcon {
   position: absolute;
-  left: 12px;
+  left: 15px;
   top: 50%;
   transform: translateY(-50%);
   color: #ffa500;
   font-size: 16px;
+  z-index: 1; /* Ensure icon is above the input */
 }
 
 .textarea {
-  height: 120px;
+  height: 120px; /* Reduced height */
   resize: vertical;
   padding: 12px 12px 12px 40px;
 }
 
 .textareaIcon {
-  top: 16px;
+  top: 16px; /* Adjusted position for textarea icon */
   transform: none;
 }
 
+/* Centered submit button */
 .submitButton {
   width: 100%;
-  padding: 12px;
+  padding: 12px; /* Reduced padding */
   background-color: #ffa500;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 15px; /* Smaller font size */
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 6px rgba(255, 165, 0, 0.2);
+  margin: 5px auto; /* Center with auto margins */
+  box-sizing: border-box; /* Ensure padding is included in width */
+  display: block; /* Ensure it's a block element for proper centering */
+  
 }
 
 .submitButton:hover {
   background-color: #ff8c00;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(255, 165, 0, 0.3);
 }
 
 .submitButton:active {
   transform: translateY(0);
+  box-shadow: 0 4px 6px rgba(255, 165, 0, 0.2);
+}
+
+/* Improve responsive styles */
+@media (max-width: 900px) {
+  .contactWrapper {
+    flex-direction: column;
+    max-width: 600px; /* Smaller max-width for tablets */
+  }
+
+  .contactInfo,
+  .formContainer {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .pageContainer {
+    padding: 15px 10px; /* Further reduced padding */
+  }
+
+  .contactInfo,
+  .formContainer {
+    padding: 20px 15px; /* Further reduced padding */
+  }
+
+  /* Ensure form elements have proper spacing on mobile */
+  .form {
+    padding: 0; /* Remove padding that might affect centering */
+    width: 100%;
+  }
+
+  /* Center the submit button on mobile */
+  .submitButton {
+    margin: 8px auto; /* Center with auto margins */
+    width: 95%; /* Slightly narrower to ensure spacing */
+    max-width: none; /* Remove max-width constraints */
+    left: 0; /* Reset any left positioning */
+    right: 0; /* Reset any right positioning */
+    position: relative; /* Ensure proper positioning */
+  }
 }
 
 @media (max-width: 480px) {
+  .contactInfo,
   .formContainer {
-    padding: 24px;
+    padding: 15px 12px; /* Minimal padding for mobile */
+  }
+
+  .infoItem {
+    margin-bottom: 12px; /* Further reduced margin */
   }
 
   .input {
-    font-size: 14px;
+    padding: 10px 10px 10px 35px; /* Smaller padding */
   }
 
+  .inputIcon {
+    left: 12px; /* Adjusted position */
+  }
+
+  /* Further center the button on small screens */
   .submitButton {
     font-size: 14px;
+    padding: 10px;
+    margin: 10px auto; /* Center with auto margins */
+    width: 90%; /* Narrower to ensure it's centered */
+    transform: none; /* Remove any transforms that might affect positioning */
   }
 }
 

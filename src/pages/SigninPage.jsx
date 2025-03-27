@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import styles from "./SigninPage.module.css"
 import UserCTX from "../context/UserContext"
 import { FaEnvelope, FaLock, FaUser } from "react-icons/fa"
+import { API_BASE_URL } from '../api';
 
 const SigninPage = () => {
   const [isLogin, setIsLogin] = useState(false)
@@ -31,7 +32,7 @@ const SigninPage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/register", {
+      const response = await fetch(`${API_BASE_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fullname: name, email, password }),
@@ -54,7 +55,7 @@ const SigninPage = () => {
     e.preventDefault()
 
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

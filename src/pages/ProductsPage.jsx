@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import classes from "./ProductsPage.module.css"
 import { FaArrowUp } from "react-icons/fa"
+import { API_BASE_URL } from '../api';
 
 export default function ProductsPage() {
   const [menuItems, setMenuItems] = useState([])
@@ -15,7 +16,7 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/get-menu${category ? `?category=${category}` : ""}`)
+        const response = await fetch(`${API_BASE_URL}/get-menu${category ? `?category=${category}` : ""}`)
         if (!response.ok) {
           throw new Error("Failed to fetch menu items.")
         }
@@ -33,7 +34,7 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:3000/get-categories")
+        const response = await fetch(`${API_BASE_URL}/get-categories`)
         if (!response.ok) {
           throw new Error("Failed to fetch categories.")
         }

@@ -16,6 +16,7 @@ import {
   FaHourglassHalf,
   FaCheckCircle,
 } from "react-icons/fa"
+import { API_BASE_URL } from '../api';
 
 export default function Messages() {
   const [messages, setMessages] = useState([])
@@ -32,7 +33,7 @@ export default function Messages() {
 
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/messages`, { credentials: "include" })
+        const response = await fetch(`${API_BASE_URL}/messages`, { credentials: "include" })
         if (!response.ok) {
           throw new Error("Failed to fetch messages")
         }
@@ -63,7 +64,7 @@ export default function Messages() {
   const handleCancelReservation = async (reservationId) => {
     if (window.confirm("Сигурен ли сте, че искате да откажете резервацията?")) {
       try {
-        const response = await fetch(`http://localhost:3000/user/reservations/${reservationId}/cancel`, {
+        const response = await fetch(`${API_BASE_URL}/user/reservations/${reservationId}/cancel`, {
           method: "PUT",
           credentials: "include",
         })
@@ -85,7 +86,7 @@ export default function Messages() {
   const handleCompleteTask = async (messageId) => {
     if (window.confirm("Потвърдете, че задачата е изпълнена")) {
       try {
-        const response = await fetch(`http://localhost:3000/tasks/${messageId}/complete`, {
+        const response = await fetch(`${API_BASE_URL}/tasks/${messageId}/complete`, {
           method: "PUT",
           credentials: "include",
         })
