@@ -54,9 +54,7 @@ export function HomePage() {
         </button>
       )}
 
-      <footer className={styles.footer}>
-        <p>© 2024 ChefConnect. {language === "en" ? "All Rights Reserved." : "Всички права запазени."}</p>
-      </footer>
+     
     </div>
   )
 }
