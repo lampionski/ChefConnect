@@ -1,37 +1,38 @@
 .pageContainer {
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #1b1921;
-  padding: 20px;
+  padding: 25px 15px; /* Reduced padding */
+  min-height: auto;
+  margin: 15px 0; /* Reduced margin */
 }
 
 .formWrapper {
   width: 100%;
-  max-width: 400px;
+  max-width: 380px; /* Reduced width */
   margin: 0 auto;
 }
 
 .formContainer {
   background: white;
-  padding: 40px;
+  padding: 25px; /* Reduced padding */
   border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .tabContainer {
   display: flex;
-  margin-bottom: 32px;
+  margin-bottom: 18px; /* Reduced margin */
   border-bottom: 1px solid #eee;
 }
 
 .tabButton {
   flex: 1;
-  padding: 12px;
+  padding: 8px; /* Reduced padding */
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 15px; /* Reduced font size */
   color: #666;
   cursor: pointer;
   position: relative;
@@ -56,12 +57,11 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px; /* Reduced gap */
   max-width: 100%;
   padding: 0px !important;
   box-shadow: none !important;
 }
-
 
 .inputGroup {
   position: relative;
@@ -69,48 +69,49 @@
 }
 
 .input {
-
-  padding: 12px 12px 12px 40px;
+  padding: 8px 8px 8px 36px; /* Reduced padding */
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   font-size: 14px;
   background-color: #f8f9fa;
   transition: all 0.3s ease;
   flex-grow: 1;
+  height: 38px; /* Reduced height */
 }
 
 .input:focus {
   outline: none;
   border-color: #ff8c00;
   background-color: white;
-  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.1);
+  box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.1);
 }
 
 .inputIcon {
   position: absolute;
-  left: 12px;
+  left: 10px; /* Adjusted position */
   top: 50%;
   transform: translateY(-50%);
   color: #999;
-  font-size: 16px;
+  font-size: 15px; /* Reduced size */
 }
 
 .submitButton {
   width: 100%;
-  padding: 12px;
+  padding: 8px; /* Reduced padding */
   background-color: #ff8c00;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 15px; /* Reduced font size */
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 8px;
+  margin-top: 6px; /* Reduced margin */
+  height: 38px; /* Reduced height */
 }
 
 .submitButton:hover {
-  background-color: #ff8c00;
+  background-color: #e67e00;
   transform: translateY(-1px);
 }
 
@@ -121,32 +122,59 @@
 .errorMessage {
   background-color: #fee2e2;
   color: #dc2626;
-  padding: 12px;
+  padding: 8px; /* Reduced padding */
   border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
+  margin-bottom: 12px; /* Reduced margin */
+  font-size: 13px; /* Reduced font size */
 }
 
 .successMessage {
   background-color: #dcfce7;
   color: #16a34a;
-  padding: 12px;
+  padding: 8px; /* Reduced padding */
   border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
+  margin-bottom: 12px; /* Reduced margin */
+  font-size: 13px; /* Reduced font size */
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 20px 15px;
+    margin: 12px 0;
+  }
+
+  .formContainer {
+    padding: 22px;
+  }
 }
 
 @media (max-width: 480px) {
+  .pageContainer {
+    padding: 15px 12px;
+    margin: 8px 0;
+  }
+
   .formContainer {
-    padding: 24px;
+    padding: 18px;
   }
 
   .input {
-    font-size: 14px;
+    font-size: 13px;
+    height: 36px;
   }
 
   .submitButton {
     font-size: 14px;
+    height: 36px;
+  }
+
+  .tabButton {
+    padding: 7px;
+    font-size: 14px;
+  }
+
+  .form {
+    gap: 10px;
   }
 }
 

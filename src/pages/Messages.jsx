@@ -80,6 +80,7 @@ export default function Messages() {
   }
 
   const handleDismissMessage = (messageId) => {
+    fetch(`${API_BASE_URL}/messages/${messageId}`, { credentials: 'include', method: 'DELETE' });
     setMessages(messages.filter((msg) => msg._id !== messageId))
   }
 
