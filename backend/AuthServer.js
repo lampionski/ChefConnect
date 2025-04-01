@@ -210,8 +210,8 @@ app.post("/login", async (req, res) => {
       expiresIn: "10d",
     })
 
-    res.cookie("accessToken", accessToken, { httpOnly: true, sameSite: 'none', expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) })
-    res.cookie("refToken", refreshToken, { httpOnly: true, sameSite: 'none', expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) })
+    res.cookie("accessToken", accessToken, { httpOnly: true, sameSite: 'none', secure: true, expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) })
+    res.cookie("refToken", refreshToken, { httpOnly: true, sameSite: 'none', secure: true, expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) })
     console.log("Login successful")
     res.status(200).json({
       message: "Login successful.",
@@ -231,11 +231,13 @@ app.get("/logout", async (req, res) => {
   if (reftoken) {
     res.clearCookie("refToken", {
       httpOnly: true,
-      sameSite: "none"
+      sameSite: "none",
+      secure: true
     })
     res.clearCookie("accessToken", {
       httpOnly: true,
-      sameSite: "none"
+      sameSite: "none",
+      secure: true
     })
     res.status(200).json({ message: "Logged out successfully." })
   } else {
