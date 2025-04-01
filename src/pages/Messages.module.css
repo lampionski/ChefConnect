@@ -155,8 +155,8 @@
 }
 
 .rejectedMessage {
-  background-color: rgba(244, 67, 54, 0.1);
-  border-left: 4px solid #f44336;
+  background-color: rgba(255, 165, 0, 0.1);
+  border-left: 4px solid var(--primary-color);
   padding: 15px;
   border-radius: 4px;
   margin-bottom: 15px;
@@ -165,10 +165,29 @@
 }
 
 .rejectionIcon {
-  color: #f44336;
+  color: var(--primary-color);
   font-size: 1.5rem;
   margin-right: 10px;
   flex-shrink: 0;
+}
+
+.rejectionTitle {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.rejectedMessage div {
+  flex: 1;
+}
+
+.rejectedMessage p {
+  margin-bottom: 10px;
+}
+
+.rejectedMessage p:last-child {
+  margin-bottom: 0;
 }
 
 .rejectedMessage p {

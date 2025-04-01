@@ -16,7 +16,6 @@ import {
   FaHourglassHalf,
   FaCheckCircle,
 } from "react-icons/fa"
-import { API_BASE_URL } from '../api';
 
 export default function Messages() {
   const [messages, setMessages] = useState([])
@@ -33,7 +32,7 @@ export default function Messages() {
 
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/messages`, { credentials: "include" })
+        const response = await fetch(`http://localhost:3000/messages`, { credentials: "include" })
         if (!response.ok) {
           throw new Error("Failed to fetch messages")
         }
@@ -64,7 +63,7 @@ export default function Messages() {
   const handleCancelReservation = async (reservationId) => {
     if (window.confirm("Сигурен ли сте, че искате да откажете резервацията?")) {
       try {
-        const response = await fetch(`${API_BASE_URL}/user/reservations/${reservationId}/cancel`, {
+        const response = await fetch(`http://localhost:3000/user/reservations/${reservationId}/cancel`, {
           method: "PUT",
           credentials: "include",
         })
@@ -80,14 +79,13 @@ export default function Messages() {
   }
 
   const handleDismissMessage = (messageId) => {
-    fetch(`${API_BASE_URL}/messages/${messageId}`, { credentials: 'include', method: 'DELETE' });
     setMessages(messages.filter((msg) => msg._id !== messageId))
   }
 
   const handleCompleteTask = async (messageId) => {
     if (window.confirm("Потвърдете, че задачата е изпълнена")) {
       try {
-        const response = await fetch(`${API_BASE_URL}/tasks/${messageId}/complete`, {
+        const response = await fetch(`http://localhost:3000/tasks/${messageId}/complete`, {
           method: "PUT",
           credentials: "include",
         })
@@ -106,38 +104,38 @@ export default function Messages() {
 
   // Parse reservation details from content
   const parseReservationDetails = (content) => {
-    // This is a simple parser assuming content is in a specific format
+    
     const details = {
       date: "",
       hour: "",
       people: "",
-      status: "pending", // Default status
+      status: "pending", 
     }
 
     try {
+      // Check status 
+      if (content.includes("cancelled") || content.includes("отказана") || content.includes("отхвърлена")) {
+        details.status = "rejected"
+      } else if (content.includes("confirmed") || content.includes("потвърдена") || content.includes("одобрена")) {
+        details.status = "confirmed"
+      }
+
       // Extract people
-      const peopleMatch = content.match(/(\d+)\s+People?/i)
+      const peopleMatch = content.match(/(\d+)\s+People|(\d+)\s+човека?/i)
       if (peopleMatch) {
-        details.people = peopleMatch[1]
+        details.people = peopleMatch[1] || peopleMatch[2]
       }
 
       // Extract date - looking for a date format like YYYY-MM-DD
-      const dateMatch = content.match(/(\d{4}-\d{2}-\d{2})/i)
+      const dateMatch = content.match(/Date:\s*(\d{4}-\d{2}-\d{2})|(\d{4}-\d{2}-\d{2})/i)
       if (dateMatch) {
-        details.date = dateMatch[1]
+        details.date = dateMatch[1] || dateMatch[2]
       }
 
       // Extract hour
-      const hourMatch = content.match(/(\d{1,2}):00/i)
+      const hourMatch = content.match(/Hour:\s*(\d{1,2}):00|(\d{1,2}):00/i)
       if (hourMatch) {
-        details.hour = hourMatch[1]
-      }
-
-      // Check status
-      if (content.includes("потвърдена") || content.includes("одобрена")) {
-        details.status = "confirmed"
-      } else if (content.includes("отказана") || content.includes("отхвърлена")) {
-        details.status = "rejected"
+        details.hour = hourMatch[1] || hourMatch[2]
       }
     } catch (err) {
       console.error("Error parsing reservation details:", err)
@@ -146,41 +144,16 @@ export default function Messages() {
     return details
   }
 
-  const parseTaskDetails = ({title, content}) => {
-    // This is a simple parser assuming content is in a specific format
-    const details = {
-      title,
-      deadline: "",
-      status: "pending", // Default status
+  // Parse task details from content
+  const parseTaskDetails = (content, deadline) => {
+    // Extract description and deadline from content
+    const lines = content.split("\n\n")
+    const description = lines[0]
+
+    return {
+      description,
+      deadline: deadline || null,
     }
-
-    try {
-
-      // Extract date - looking for a date format like YYYY-MM-DD
-      const dateMatch = content.match(/(\d{4}-\d{2}-\d{2})/i)
-      if (dateMatch) {
-        details.date = dateMatch[1]
-      }
-
-      // Extract hour
-      const hourMatch = content.match(/(\d{1,2}):00/i)
-      if (hourMatch) {
-        details.hour = hourMatch[1]
-      }
-
-      details.deadline = `${dateMatch?.[1]} ${hourMatch?.[1]}:00`;
-
-      // Check status
-      if (content.includes("потвърдена") || content.includes("одобрена")) {
-        details.status = "confirmed"
-      } else if (content.includes("отказана") || content.includes("отхвърлена")) {
-        details.status = "rejected"
-      }
-    } catch (err) {
-      console.error("Error parsing reservation details:", err)
-    }
-
-    return details
   }
 
   // Format date to Bulgarian format
@@ -251,7 +224,7 @@ export default function Messages() {
             // Parse task details if it's a task
             const taskDetails =
               message.type === "task"
-                ? parseTaskDetails(message)
+                ? parseTaskDetails(message.content, message.deadline)
                 : { description: "", deadline: null }
 
             const deadlinePassed = isDeadlinePassed(message.deadline)
@@ -288,10 +261,19 @@ export default function Messages() {
                     {reservationDetails.status === "rejected" ? (
                       <div className={styles.rejectedMessage}>
                         <FaExclamationTriangle className={styles.rejectionIcon} />
-                        <p>
-                          Съжаляваме, но Вашата заявка за резервация не може да бъде потвърдена. Моля, свържете се с нас
-                          за повече информация или опитайте с друга дата или час.
-                        </p>
+                        <div>
+                          <p className={styles.rejectionTitle}>Скъпи гост,</p>
+                          <p>
+                            С искрено съжаление Ви информираме, че не можем да потвърдим Вашата резервация за желаната
+                            дата и час. Молим за разбиране!
+                          </p>
+                          <p>
+                            Бихме искали да Ви предложим да се свържете с нас по телефона, за да Ви помогнем да намерите
+                            друго подходящо време за Вашето посещение. Ще бъдем щастливи да Ви посрещнем в нашия
+                            ресторант.
+                          </p>
+                          <p>Благодарим Ви за интереса и се надяваме скоро да имаме удоволствието да Ви посрещнем!</p>
+                        </div>
                       </div>
                     ) : (
                       <p className={styles.welcomeMessage}>
@@ -320,9 +302,14 @@ export default function Messages() {
                       </div>
                     </div>
 
-                    {reservationDetails.status !== "rejected" && (
+                    {reservationDetails.status !== "rejected" ? (
                       <p className={styles.additionalInfo}>
                         Очакваме Ви! Ако имате въпроси или желаете да промените резервацията си, моля свържете се с нас.
+                      </p>
+                    ) : (
+                      <p className={styles.additionalInfo}>
+                        Вашето удовлетворение е наш приоритет. Винаги сме на разположение да Ви помогнем с алтернативна
+                        резервация, която да отговаря на Вашите предпочитания.
                       </p>
                     )}
                   </div>
@@ -342,17 +329,17 @@ export default function Messages() {
                     </div>
 
                     <div className={styles.taskDescription}>
-                      <p>{taskDetails.title}</p>
+                      <p>{taskDetails.description}</p>
                     </div>
 
                     <div className={styles.taskInfo}>
                       <div className={styles.infoItem}>
                         <FaCalendarAlt className={styles.infoIcon} />
-                        <span>Краен срок: {formatDate(taskDetails.deadline)}</span>
+                        <span>Краен срок: {formatDate(message.deadline)}</span>
                       </div>
                       <div className={styles.infoItem}>
                         <FaClock className={styles.infoIcon} />
-                        <span>Час: {formatTime(taskDetails.deadline)}</span>
+                        <span>Час: {formatTime(message.deadline)}</span>
                       </div>
                       <div className={styles.infoItem}>
                         <FaHourglassHalf className={styles.infoIcon} />

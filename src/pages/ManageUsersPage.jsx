@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useContext } from "react"
 import { useNavigate } from "react-router-dom" // Added for navigation
-import { FaSearch, FaEdit, FaTrash, FaArrowLeft } from "react-icons/fa" // Added FaArrowLeft
+import { FaSearch, FaEdit, FaTrash, FaArrowLeft, FaUser } from "react-icons/fa" // Added FaArrowLeft and FaUser
 import styles from "./ManageUsers.module.css"
 import UserCTX from "../context/UserContext"
-import { API_BASE_URL } from '../api';
+import { API_BASE_URL } from "../api"
 
 const ManageUsersPage = () => {
   const navigate = useNavigate() // Added for navigation
@@ -93,6 +93,20 @@ const ManageUsersPage = () => {
     navigate(-1) // Navigate back to previous page
   }
 
+  // Function to translate role names to Bulgarian
+  const translateRole = (role) => {
+    switch (role) {
+      case "admin":
+        return "Администратор"
+      case "worker":
+        return "Работник"
+      case "user":
+        return "Потребител"
+      default:
+        return role
+    }
+  }
+
   if (loading) return <div>Зарежда...</div>
   if (error) return <div>Грешка: {error}</div>
 
@@ -106,6 +120,7 @@ const ManageUsersPage = () => {
       <table className={styles.usersTable}>
         <thead>
           <tr>
+            <th className={styles.photoColumn}>Снимка</th>
             <th>Име</th>
             <th>Имейл</th>
             <th>Роля</th>
@@ -115,9 +130,20 @@ const ManageUsersPage = () => {
         <tbody>
           {filteredUsers.map((user) => (
             <tr key={user._id}>
+              <td className={styles.photoCell}>
+                {user.photo ? (
+                  <img src={user.photo || "/placeholder.svg"} alt={user.fullname} className={styles.userPhoto} />
+                ) : (
+                  <div className={styles.userPhotoPlaceholder}>
+                    <FaUser />
+                  </div>
+                )}
+              </td>
               <td>{user.fullname}</td>
               <td>{user.email}</td>
-              <td>{user.role}</td>
+              <td>
+                <span className={`${styles.roleTag} ${styles[user.role]}`}>{translateRole(user.role)}</span>
+              </td>
               <td>
                 <button onClick={() => handleEdit(user)} className={styles.editButton}>
                   <FaEdit />
@@ -134,23 +160,44 @@ const ManageUsersPage = () => {
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <h2>Редактиране на Потребител</h2>
+            <div className={styles.editUserPhoto}>
+              {editingUser.photo ? (
+                <img
+                  src={editingUser.photo || "/placeholder.svg"}
+                  alt={editingUser.fullname}
+                  className={styles.editingUserPhoto}
+                />
+              ) : (
+                <div className={styles.editingUserPhotoPlaceholder}>
+                  <FaUser />
+                </div>
+              )}
+            </div>
             <input
               type="text"
               value={editingUser.fullname}
               onChange={(e) => setEditingUser({ ...editingUser, fullname: e.target.value })}
+              placeholder="Име"
             />
             <input
               type="email"
               value={editingUser.email}
               onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+              placeholder="Имейл"
             />
             <select value={editingUser.role} onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}>
               <option value="user">Потребител</option>
               <option value="worker">Работник</option>
               <option value="admin">Администратор</option>
             </select>
-            <button onClick={handleSave}>Запази</button>
-            <button onClick={() => setEditingUser(null)}>Откажи промени</button>
+            <div className={styles.modalButtons}>
+              <button onClick={handleSave} className={styles.saveButton}>
+                Запази
+              </button>
+              <button onClick={() => setEditingUser(null)} className={styles.cancelButton}>
+                Откажи промени
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -20,7 +20,7 @@ export default function ManageMenu() {
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [selectedCategory, setSelectedCategory] = useState("Всички")
   const [showScrollTop, setShowScrollTop] = useState(false)
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function ManageMenu() {
         const [menuData, categoryData] = await Promise.all([menuResponse.json(), categoryResponse.json()])
 
         setMenuItems(menuData)
-        setCategories(["All", ...categoryData])
+        setCategories(["Всички", ...categoryData])
         setFormData((prev) => ({ ...prev, category: categoryData[0] || "" }))
       } catch (err) {
         setError(err.message)
@@ -168,7 +168,7 @@ export default function ManageMenu() {
 
   // Fix the filter to work with "All" instead of "Всичко"
   const filteredItems =
-    selectedCategory === "All" ? menuItems : menuItems.filter((item) => item.category === selectedCategory)
+    selectedCategory === "Всички" ? menuItems : menuItems.filter((item) => item.category === selectedCategory)
 
   const renderForm = (data, isEditing) => (
     <div className={styles.addItemContainer}>
@@ -235,7 +235,7 @@ export default function ManageMenu() {
 
       <div className={styles.menuList}>
         <h3>Същестуващи продукти</h3>
-        {selectedCategory === "All" ? (
+        {selectedCategory === "Всички" ? (
           // When "All" is selected, show all categories with their items
           categories
             .slice(1)

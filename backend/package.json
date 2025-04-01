@@ -4,7 +4,7 @@
   "description": "",
   "main": "authServer.js",
   "scripts": {
-    "start": "node authServer.js",  
+    "start": "node AuthServer.js",  
     "dev": "nodemon authServer.js", 
     "build": "echo 'No build step for backend yet'", 
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -142,6 +142,142 @@
   color: #333;
 }
 
+.cropModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+}
+
+.cropContainer {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cropHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.cropHeader h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.closeButton:hover {
+  color: #ff8c00;
+}
+
+.cropperWrapper {
+  position: relative;
+  height: 300px;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+
+.cropControls {
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+}
+
+.zoomControl {
+  margin-bottom: 15px;
+}
+
+.zoomControl label {
+  display: block;
+  margin-bottom: 5px;
+  color: #666;
+  font-size: 14px;
+}
+
+.zoomControl input {
+  width: 100%;
+  margin: 0;
+}
+
+.cropActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancelCropButton,
+.saveCropButton {
+  padding: 8px 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.cancelCropButton {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.cancelCropButton:hover {
+  background-color: #e0e0e0;
+}
+
+.saveCropButton {
+  background-color: #ff8c00;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.saveCropButton:hover {
+  background-color: #e67e00;
+}
+
+/* Make sure the cropper container is properly styled */
+.cropperWrapper > div {
+  height: 100%;
+}
+
+/* Ensure the cropper container is visible */
+.cropperWrapper :global(.reactEasyCrop_Container) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Style the cropper area */
+.cropperWrapper :global(.reactEasyCrop_CropArea) {
+  color: rgba(255, 140, 0, 0.38);
+  border: 2px solid #ff8c00;
+}
+
 @media (min-width: 768px) {
   .profileContainer {
     padding: 30px;

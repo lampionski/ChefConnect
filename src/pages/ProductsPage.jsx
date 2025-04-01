@@ -39,7 +39,7 @@ export default function ProductsPage() {
           throw new Error("Failed to fetch categories.")
         }
         const data = await response.json()
-        setCategories(["All", ...data])
+        setCategories(["Всички", ...data])
       } catch (err) {
         setError(err.message)
       }
@@ -89,9 +89,9 @@ export default function ProductsPage() {
           <button
             key={cat}
             className={`${classes.filterButton} ${
-              category === (cat === "All" ? "" : cat) ? classes.active : ""
-            } ${cat === "All" ? classes.defaultFilter : ""}`}
-            onClick={() => setCategory(cat === "All" ? "" : cat)}
+              category === (cat === "Всички" ? "" : cat) ? classes.active : ""
+            } ${cat === "Всички" ? classes.defaultFilter : ""}`}
+            onClick={() => setCategory(cat === "Всички" ? "" : cat)}
           >
             {cat}
           </button>
@@ -141,10 +141,6 @@ export default function ProductsPage() {
           <FaArrowUp />
         </button>
       )}
-
-      
-
     </div>
   )
 }
-

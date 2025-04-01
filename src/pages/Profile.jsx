@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useEffect, useContext, useCallback } from "react"
-import { FaCamera, FaLock } from "react-icons/fa"
+import { FaCamera, FaLock, FaTimes, FaCheck } from "react-icons/fa"
 import styles from "./Profile.module.css"
 import UserCTX from "../context/UserContext"
-import { API_BASE_URL } from '../api';
+import { API_BASE_URL } from "../api"
+import Cropper from "react-easy-crop"
 
 const Profile = () => {
   const { user: contextUser } = useContext(UserCTX)
@@ -22,6 +23,13 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
 
+  // Crop related states
+  const [showCropModal, setShowCropModal] = useState(false)
+  const [imageSrc, setImageSrc] = useState(null)
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
+
   const fetchUserData = useCallback(async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/user-profile`, {
@@ -29,7 +37,7 @@ const Profile = () => {
       })
       if (response.ok) {
         const userData = await response.json()
-        console.log(userData);
+        console.log(userData)
         setUser(userData)
       } else {
         throw new Error("Failed to fetch user data")
@@ -59,12 +67,67 @@ const Profile = () => {
     if (file) {
       const reader = new FileReader()
       reader.onloadend = () => {
-        setUser((prevUser) => ({
-          ...prevUser,
-          photo: reader.result,
-        }))
+        // Instead of directly setting the photo, we set the image source for cropping
+        setImageSrc(reader.result)
+        setShowCropModal(true)
       }
       reader.readAsDataURL(file)
+    }
+  }
+
+  const handleCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels)
+  }, [])
+
+  const createImage = (url) =>
+    new Promise((resolve, reject) => {
+      const image = new Image()
+      image.addEventListener("load", () => resolve(image))
+      image.addEventListener("error", (error) => reject(error))
+      image.setAttribute("crossOrigin", "anonymous")
+      image.src = url
+    })
+
+  const getCroppedImg = async (imageSrc, pixelCrop) => {
+    const image = await createImage(imageSrc)
+    const canvas = document.createElement("canvas")
+    const ctx = canvas.getContext("2d")
+
+    const maxSize = Math.max(image.width, image.height)
+    const safeArea = 2 * ((maxSize / 2) * Math.sqrt(2))
+
+    // Set canvas size to match the bounding box
+    canvas.width = pixelCrop.width
+    canvas.height = pixelCrop.height
+
+    // Draw the cropped image onto the canvas
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height,
+    )
+
+    // Return as a data URL
+    return canvas.toDataURL("image/jpeg")
+  }
+
+  const handleSaveCroppedImage = async () => {
+    try {
+      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels)
+      setUser((prevUser) => ({
+        ...prevUser,
+        photo: croppedImage,
+      }))
+      setShowCropModal(false)
+      setImageSrc(null)
+    } catch (e) {
+      console.error("Error getting cropped image:", e)
     }
   }
 
@@ -133,8 +196,6 @@ const Profile = () => {
     }
   }
 
-  console.log(isEditing)
-
   return (
     <div className={styles.profileContainer}>
       <h1>Потребителски Профил</h1>
@@ -202,15 +263,21 @@ const Profile = () => {
           </div>
           <div className={styles.buttonGroup}>
             {isEditing ? (
-              <button className={styles.saveButton}>
-                Запази промени
-              </button>
+              <button className={styles.saveButton}>Запази промени</button>
             ) : (
-              <button type="button" onClick={e => (e.preventDefault(), setIsEditing(true))} className={styles.editButton}>
+              <button
+                type="button"
+                onClick={(e) => (e.preventDefault(), setIsEditing(true))}
+                className={styles.editButton}
+              >
                 Редактирай профила
               </button>
             )}
-            <button type="button" onClick={e => (e.preventDefault(), setShowPasswordModal(true))} className={styles.changePasswordButton}>
+            <button
+              type="button"
+              onClick={(e) => (e.preventDefault(), setShowPasswordModal(true))}
+              className={styles.changePasswordButton}
+            >
               <FaLock /> Редактирай парола
             </button>
           </div>
@@ -244,13 +311,72 @@ const Profile = () => {
               </div>
               <div className={styles.buttonGroup}>
                 <button type="submit" className={styles.changePasswordButton}>
-                Промяна на парола
+                  Промяна на парола
                 </button>
                 <button type="button" onClick={() => setShowPasswordModal(false)} className={styles.cancelButton}>
                   Откажи
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Image Cropper Modal */}
+      {showCropModal && (
+        <div className={styles.cropModal}>
+          <div className={styles.cropContainer}>
+            <div className={styles.cropHeader}>
+              <h3>Редактирайте снимката</h3>
+              <button
+                className={styles.closeButton}
+                onClick={() => {
+                  setShowCropModal(false)
+                  setImageSrc(null)
+                }}
+              >
+                <FaTimes />
+              </button>
+            </div>
+            <div className={styles.cropperWrapper}>
+              <Cropper
+                image={imageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onCropComplete={handleCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+            <div className={styles.cropControls}>
+              <div className={styles.zoomControl}>
+                <label>Увеличение:</label>
+                <input
+                  type="range"
+                  value={zoom}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  aria-labelledby="Zoom"
+                  onChange={(e) => setZoom(Number.parseFloat(e.target.value))}
+                />
+              </div>
+              <div className={styles.cropActions}>
+                <button
+                  className={styles.cancelCropButton}
+                  onClick={() => {
+                    setShowCropModal(false)
+                    setImageSrc(null)
+                  }}
+                >
+                  Откажи
+                </button>
+                <button className={styles.saveCropButton} onClick={handleSaveCroppedImage}>
+                  <FaCheck /> Запази
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -16,7 +16,6 @@ import {
   FaHistory,
   FaArrowLeft, // Added FaArrowLeft
 } from "react-icons/fa"
-import { API_BASE_URL } from '../api';
 
 const ManageWorkersPage = () => {
   const [workers, setWorkers] = useState([])
@@ -51,7 +50,7 @@ const ManageWorkersPage = () => {
     // Fetch workers
     const fetchWorkers = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/admin/workers`, {
+        const response = await fetch("http://localhost:3000/admin/workers", {
           credentials: "include",
         })
 
@@ -75,7 +74,7 @@ const ManageWorkersPage = () => {
   const fetchWorkerTasks = async (workerId) => {
     setTasksLoading(true)
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/worker-tasks/${workerId}`, {
+      const response = await fetch(`http://localhost:3000/admin/worker-tasks/${workerId}`, {
         credentials: "include",
       })
 
@@ -125,7 +124,7 @@ const ManageWorkersPage = () => {
       // Format the deadline with time
       const deadlineWithTime = `${taskForm.deadline}T${taskForm.deadlineTime}`
 
-      const response = await fetch(`${API_BASE_URL}/admin/assign-task`, {
+      const response = await fetch("http://localhost:3000/admin/assign-task", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -172,7 +171,6 @@ const ManageWorkersPage = () => {
     if (!dateString) return "-"
 
     const date = new Date(dateString)
-    console.log(date);
     if (isNaN(date.getTime())) return "-"
 
     return date.toLocaleDateString("bg-BG", {
@@ -211,43 +209,6 @@ const ManageWorkersPage = () => {
     return text.substring(0, maxLength) + "..."
   }
 
-  const parseTaskDetails = ({title, content}) => {
-    // This is a simple parser assuming content is in a specific format
-    const details = {
-      title,
-      deadline: "",
-      status: "pending", // Default status
-    }
-
-    try {
-
-      // Extract date - looking for a date format like YYYY-MM-DD
-      const dateMatch = content.match(/(\d{4}-\d{2}-\d{2})/i)
-      if (dateMatch) {
-        details.date = dateMatch[1]
-      }
-
-      // Extract hour
-      const hourMatch = content.match(/(\d{1,2}):00/i)
-      if (hourMatch) {
-        details.hour = hourMatch[1]
-      }
-
-      details.deadline = `${dateMatch?.[1]} ${hourMatch?.[1]}:00`;
-
-      // Check status
-      if (content.includes("потвърдена") || content.includes("одобрена")) {
-        details.status = "confirmed"
-      } else if (content.includes("отказана") || content.includes("отхвърлена")) {
-        details.status = "rejected"
-      }
-    } catch (err) {
-      console.error("Error parsing reservation details:", err)
-    }
-
-    return details
-  }
-
   if (loading) return <div className={styles.loading}>Зареждане...</div>
   if (error && !workers.length) return <div className={styles.error}>{error}</div>
 
@@ -270,6 +231,13 @@ const ManageWorkersPage = () => {
                   className={`${styles.workerItem} ${selectedWorker?._id === worker._id ? styles.selected : ""}`}
                   onClick={() => handleWorkerSelect(worker)}
                 >
+                  <div className={styles.workerAvatar}>
+                    <img
+                      src={worker.photo || "/placeholder.svg"}
+                      alt={worker.fullname}
+                      className={styles.workerPhoto}
+                    />
+                  </div>
                   <div className={styles.workerInfo}>
                     <strong>{worker.fullname}</strong>
                     <span>{worker.position}</span>
@@ -302,9 +270,6 @@ const ManageWorkersPage = () => {
                     </thead>
                     <tbody>
                       {workerTasks.map((task) => {
-                        task = parseTaskDetails(task)
-                        console.log(task);
-
                         const deadlinePassed = isDeadlinePassed(task.deadline)
                         const status =
                           task.status === "completed" ? "completed" : deadlinePassed ? "overdue" : "pending"
@@ -361,9 +326,16 @@ const ManageWorkersPage = () => {
 
           {selectedWorker ? (
             <div className={styles.selectedWorker}>
-              <p>
-                Избран работник: <strong>{selectedWorker.fullname}</strong>
-              </p>
+              <div className={styles.selectedWorkerContent}>
+                <img
+                  src={selectedWorker.photo || "/placeholder.svg"}
+                  alt={selectedWorker.fullname}
+                  className={styles.selectedWorkerPhoto}
+                />
+                <p>
+                  Избран работник: <strong>{selectedWorker.fullname}</strong>
+                </p>
+              </div>
             </div>
           ) : (
             <p className={styles.noSelection}>Моля, изберете работник от списъка</p>
@@ -407,7 +379,7 @@ const ManageWorkersPage = () => {
                   name="deadline"
                   value={taskForm.deadline}
                   onChange={handleInputChange}
-                  // min={new Date().toISOString().split("T")[0]}
+                  min={new Date().toISOString().split("T")[0]}
                   disabled={!selectedWorker}
                 />
               </div>
