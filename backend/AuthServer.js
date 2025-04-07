@@ -445,8 +445,19 @@ app.put("/tasks/:id/complete", gatherUserInfo, async (req, res) => {
 
 
 
+// // Start Server
+// app.listen(process.env.PORT || 3000, () => {
+//   console.log("Server running on http://localhost:3000")
+// })
+
+
 // Start Server
-app.listen(process.env.PORT || 3000, () => {
-  console.log("Server running on http://localhost:3000")
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? process.env.API_BASE_URL || 'https://chefconnect-1.onrender.com'
+    : `http://localhost:${PORT}`;
+  
+  console.log(`Server running on ${baseUrl}`);
 })
 
