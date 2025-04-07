@@ -1,5 +1,3 @@
-
-
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -445,19 +443,15 @@ app.put("/tasks/:id/complete", gatherUserInfo, async (req, res) => {
 
 
 
-// // Start Server
-// app.listen(process.env.PORT || 3000, () => {
-//   console.log("Server running on http://localhost:3000")
-// })
-
-
 // Start Server
 const PORT = process.env.PORT || 3000;
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost';
+
 app.listen(PORT, () => {
-  const baseUrl = process.env.NODE_ENV === 'production' 
+  const baseUrl = process.env.NODE_ENV === 'production'
     ? process.env.API_BASE_URL || 'https://chefconnect-1.onrender.com'
-    : `http://localhost:${PORT}`;
+    : `${API_BASE_URL}:${PORT}`;
   
   console.log(`Server running on ${baseUrl}`);
-})
+});
 
