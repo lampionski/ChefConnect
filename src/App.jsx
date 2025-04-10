@@ -49,13 +49,6 @@ function App() {
       <RouterProvider router={router} fallbackElement={<div>Loading...</div>}/>
     </UserCTX.Provider>
   )
-
-  // return (
-  //   <UserCTX.Provider value={{ user, setUser }}>
-  //     <RouterProvider router={router}  />
-  //   </UserCTX.Provider>
-  // )
 }
-
 export default App
 

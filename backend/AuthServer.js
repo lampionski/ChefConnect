@@ -4,7 +4,7 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-require("dotenv").config();  // This will load the .env file
+require("dotenv").config(); //load the .env file
 const gatherUserInfo = require("./Middlewares/gatherUserInfo");
 
 const adminRoutes = require('./routes/adminRoutes');
@@ -16,7 +16,7 @@ const Message = require("./Schemas/Message");
 
 const app = express();
 
-// Predefined categories
+//  categories
 const categories = ["Салата", "Специалитети", "Предястия и Разядки", "Барбекю", "Паста и Ризото", "Риба и Морски Дарове",
   "Бургери и Тортила","Супи" , "Десерти", "Хлебчета", "Сосове", "Напитки"];
 
@@ -402,31 +402,31 @@ app.put("/tasks/:id/complete", gatherUserInfo, async (req, res) => {
   try {
     const { id } = req.params
     
-    // Find the message (task)
+    // Find the message by ID
     const message = await Message.findById(id)
     
     if (!message) {
       return res.status(404).json({ message: "Task not found" })
     }
     
-    // Verify that the current user is the receiver of the task
+    // Check if the logged-in user is the receiver of the task
     if (message.receiver.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized to update this task" })
     }
     
-    // Verify that it's a task type message
+    // Check if the message is a task
     if (message.type !== "task") {
       return res.status(400).json({ message: "This message is not a task" })
     }
     
-    // Update the task status to completed
+    // Mark the task as completed
     message.status = "completed"
     await message.save()
     
-    // Optionally, send a notification to the admin who assigned the task
+    // Create a notification for the admin who assigned the task
     const adminNotification = new Message({
       sender: req.user._id,
-      receiver: message.sender, // The admin who assigned the task
+      receiver: message.sender, 
       title: "Задача изпълнена",
       content: `Задачата "${message.title.replace('Нова задача: ', '')}" беше маркирана като изпълнена от ${req.user.fullname}.`,
       type: "notification"
