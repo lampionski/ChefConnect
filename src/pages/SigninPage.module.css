@@ -63,6 +63,10 @@
   box-shadow: none !important;
 }
 
+.formField {
+  margin-bottom: 15px;
+}
+
 .inputGroup {
   position: relative;
   display: flex;
@@ -84,6 +88,11 @@
   border-color: #ff8c00;
   background-color: white;
   box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.1);
+}
+
+.inputError {
+  border-color: #dc3545 !important;
+  background-color: rgba(220, 53, 69, 0.05) !important;
 }
 
 .inputIcon {
@@ -137,6 +146,35 @@
   font-size: 13px; /* Reduced font size */
 }
 
+.validationError {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  padding-left: 40px;
+}
+
+.passwordRequirements {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  padding-left: 40px;
+}
+
+.requirementMet {
+  color: #28a745;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 3px;
+}
+
+.requirementNotMet {
+  color: #dc3545;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 3px;
+}
+
 @media (max-width: 768px) {
   .pageContainer {
     padding: 20px 15px;
@@ -177,4 +215,3 @@
     gap: 10px;
   }
 }
-
