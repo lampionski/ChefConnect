@@ -125,6 +125,7 @@ const SigninPage = () => {
       })
 
       const result = await response.json()
+      console.log(response);
 
       if (response.ok) {
         // Store the access token and refresh user data
@@ -184,7 +185,7 @@ const SigninPage = () => {
       const result = await response.json()
 
       if (response.ok) {
-        setSuccess("Регистрацията е успешна! Моля, проверете имейла си за потвърждение.")
+        setSuccess("Регистрацията е успешна!")
         // Clear form
         setName("")
         setEmail("")
