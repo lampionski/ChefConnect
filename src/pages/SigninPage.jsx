@@ -128,11 +128,7 @@ const SigninPage = () => {
       console.log(response);
 
       if (response.ok) {
-        // Store the access token and refresh user data
-        localStorage.setItem("accessToken", result.accessToken)
-        await refreshUserData() // Refresh user data to get role information
-        // Redirect to protected route or home page
-        navigate("/")
+        window.location.pathname = '/';
       } else {
         setError(result.error || "Възникна грешка при влизането")
       }
