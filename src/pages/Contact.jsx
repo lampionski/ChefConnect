@@ -3,7 +3,7 @@
 import styles from "./Contact.module.css"
 import Swal from "sweetalert2"
 import { FaUser, FaEnvelope, FaCommentAlt, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa"
-import Footer from "../components/Footer" // Import the Footer component
+import Footer from "../components/Footer" 
 
 const Contact = () => {
   const onSubmit = async (event) => {

@@ -43,7 +43,7 @@ const router = createBrowserRouter([
 
 function App() {
   const [user, setUser] = useState(null)
-
+  //manage user authentication status and details
   return (
     <UserCTX.Provider value={{ user, setUser }}>
       <RouterProvider router={router} fallbackElement={<div>Loading...</div>}/>

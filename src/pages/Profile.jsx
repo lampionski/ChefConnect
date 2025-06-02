@@ -62,6 +62,7 @@ const Profile = () => {
     }))
   }
 
+  // Handle photo upload and cropping
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0]
     if (file) {

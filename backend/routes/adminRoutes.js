@@ -1,12 +1,10 @@
 const express = require("express")
 const router = express.Router()
 const adminCheck = require("../Middlewares/adminCheck")
-const UserSchema = require("../Schemas/UserSchema") // Update this path if necessary
+const UserSchema = require("../Schemas/UserSchema") 
 const gatherUserInfo = require("../Middlewares/gatherUserInfo")
-
 const Reservation = require("../Schemas/Reservation")
 const Message = require("../Schemas/Message")
-
 const systemId = "67ca90c3808cf1cb279bbeda"
 
 // Protect all routes in this router with admin check
@@ -34,6 +32,7 @@ router.put("/users/:id", async (req, res) => {
       return res.status(403).json({ message: "Cannot change your own role" })
     }
 
+    //
     const updatedUser = await UserSchema.findByIdAndUpdate(
       id,
       {
@@ -146,6 +145,7 @@ router.put("/reservations/:id", async (req, res) => {
   }
 })
 
+// Get all workers
 router.get("/workers", gatherUserInfo, async (req, res) => {
   try {
     const users = await UserSchema.find({ role: 'worker' }, "-password").sort("fullname")

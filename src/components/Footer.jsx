@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import styles from "./Footer.module.css"
 import { FaFacebookF, FaInstagram, FaTwitter, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaClock } from "react-icons/fa"
-import logo from "../assets/logo.png" // Make sure this path is correct
+import logo from "../assets/logo.png" 
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()

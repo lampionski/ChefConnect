@@ -1,8 +1,8 @@
 // AboutUs.jsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import styles from './AboutUs.module.css';
-import photo1 from '../assets/images/aboutUs.jpg'; // Hero Image
+import photo1 from '../assets/images/aboutUs.jpg'; 
 
 export function AboutUs() {
     const navigate = useNavigate(); // Initialize navigate function

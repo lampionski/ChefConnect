@@ -52,7 +52,7 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoutes);
 
-
+// Get all messages
 app.get("/messages", gatherUserInfo, async (req, res) => {
   try {
     const messages = await Message.find({ receiver: req.user._id }).populate('sender', '-password');
@@ -63,6 +63,7 @@ app.get("/messages", gatherUserInfo, async (req, res) => {
   }
 })
 
+// Delete a message
 app.delete("/messages/:id", gatherUserInfo, async (req, res) => {
   try {
     await Message.deleteOne({ receiver: req.user._id, _id: req.params.id });
@@ -126,7 +127,7 @@ app.post("/change-password", gatherUserInfo, async (req, res) => {
     res.status(500).json({ message: "Failed to change password." })
   }
 })
-
+// Get user info
 app.get("/user", gatherUserInfo, async (req, res) => {
   if (req.user == null) {
     res.json(null);
@@ -170,7 +171,7 @@ app.post("/register", async (req, res) => {
       console.log("Email already in use")
       return res.status(400).json({ message: "Email already in use." })
     }
-
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10)
     const newUser = new UserSchema({ email, password: hashedPassword, fullname })
     await newUser.save()
@@ -208,6 +209,7 @@ app.post("/login", async (req, res) => {
       expiresIn: "10d",
     })
 
+    // Store the  token in the user's document
     res.cookie("accessToken", accessToken, { httpOnly: true, sameSite: 'none', secure: true, expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) })
     res.cookie("refToken", refreshToken, { httpOnly: true, sameSite: 'none', secure: true, expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) })
     console.log("Login successful")
