@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useContext } from "react"
 import { useNavigate } from "react-router-dom" // Added for navigation
-import { FaSearch, FaEdit, FaTrash, FaArrowLeft, FaUser } from "react-icons/fa" // Added FaArrowLeft and FaUser
+import { FaSearch, FaEdit, FaTrash, FaArrowLeft, FaUser, FaExclamationTriangle } from "react-icons/fa"
 import styles from "./ManageUsers.module.css"
 import UserCTX from "../context/UserContext"
 import { API_BASE_URL } from "../api"
@@ -17,8 +17,9 @@ const ManageUsersPage = () => {
   const { user } = useContext(UserCTX)
 
   useEffect(() => {
+    if (user?.role !== "admin") { navigate("/"); return }
     fetchUsers()
-  }, [])
+  }, [user, navigate])
 
   const fetchUsers = async () => {
     try {
@@ -27,7 +28,7 @@ const ManageUsersPage = () => {
         credentials: "include",
       })
       if (!response.ok) {
-        throw new Error("Failed to fetch users")
+        throw new Error("Потребителите не могат да бъдат заредени.")
       }
       const data = await response.json()
       setUsers(data)
@@ -43,7 +44,7 @@ const ManageUsersPage = () => {
     setSearchTerm(event.target.value)
   }
 
-  const filteredUsers = users.filter((user) => user.fullname.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredUsers = users.filter((entry) => (entry.fullname || "").toLowerCase().includes(searchTerm.toLowerCase()))
 
   const handleEdit = (user) => {
     setEditingUser({ ...user })
@@ -63,15 +64,16 @@ const ManageUsersPage = () => {
         fetchUsers()
         setEditingUser(null)
       } else {
-        throw new Error("Failed to update user")
+        throw new Error("Промените не могат да бъдат запазени.")
       }
     } catch (error) {
       console.error("Error updating user:", error)
+      alert(error.message)
     }
   }
 
   const handleDelete = async (userId) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
+    if (window.confirm("Сигурни ли сте, че искате да изтриете този потребител?")) {
       try {
         const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
           method: "DELETE",
@@ -80,10 +82,11 @@ const ManageUsersPage = () => {
         if (response.ok) {
           fetchUsers()
         } else {
-          throw new Error("Failed to delete user")
+          throw new Error("Потребителят не може да бъде изтрит.")
         }
       } catch (error) {
         console.error("Error deleting user:", error)
+        alert(error.message)
       }
     }
   }
@@ -107,24 +110,42 @@ const ManageUsersPage = () => {
     }
   }
 
-  if (loading) return <div>Зарежда...</div>
-  if (error) return <div>Грешка: {error}</div>
+  const back = (
+    <button className="back-link" onClick={goBack}>
+      <FaArrowLeft aria-hidden="true" /> Назад
+    </button>
+  )
+
+  if (loading) return <div className="page">{back}<p className="loader" role="status">Зарежда…</p></div>
+  if (error) return <div className="page">{back}<p className="notice notice--error" role="alert"><FaExclamationTriangle aria-hidden="true" /> Грешка: {error === "Failed to fetch" ? "няма връзка със сървъра." : error}</p></div>
 
   return (
-    <div className={styles.manageUsers}>
-      <h1>Управление на Потребители</h1>
+    <div className={`page ${styles.manageUsers}`}>
+      {back}
+      <header className="page-head">
+        <h1 className="page-title">Управление на потребители</h1>
+        <p className="page-lede">{users.length} регистрирани акаунта</p>
+      </header>
       <div className={styles.searchBar}>
-        <FaSearch className={styles.searchIcon} />
-        <input type="text" placeholder="Търсене по име" value={searchTerm} onChange={handleSearch} />
+        <label htmlFor="user-search" className="visually-hidden">Търсене по име</label>
+        <FaSearch className={styles.searchIcon} aria-hidden="true" />
+        <input id="user-search" className="input" type="search" placeholder="Търсене по име" value={searchTerm} onChange={handleSearch} />
       </div>
-      <table className={styles.usersTable}>
+      {filteredUsers.length === 0 ? (
+        <div className="state">
+          <strong>Няма намерени потребители.</strong>
+          <span>Опитайте с друго име.</span>
+        </div>
+      ) : (
+      <div className="table-wrap">
+      <table className="data-table data-table--stack">
         <thead>
           <tr>
-            <th className={styles.photoColumn}>Снимка</th>
-            <th>Име</th>
-            <th>Имейл</th>
-            <th>Роля</th>
-            <th>Действия</th>
+            <th scope="col" className={styles.photoColumn}><span className="visually-hidden">Снимка</span></th>
+            <th scope="col">Име</th>
+            <th scope="col">Имейл</th>
+            <th scope="col">Роля</th>
+            <th scope="col">Действия</th>
           </tr>
         </thead>
         <tbody>
@@ -132,80 +153,91 @@ const ManageUsersPage = () => {
             <tr key={user._id}>
               <td className={styles.photoCell}>
                 {user.photo ? (
-                  <img src={user.photo || "/placeholder.svg"} alt={user.fullname} className={styles.userPhoto} />
+                  <img src={user.photo || "/placeholder.svg"} alt="" className={styles.userPhoto} />
                 ) : (
                   <div className={styles.userPhotoPlaceholder}>
-                    <FaUser />
+                    <FaUser aria-hidden="true" />
                   </div>
                 )}
               </td>
-              <td>{user.fullname}</td>
-              <td>{user.email}</td>
-              <td>
-                <span className={`${styles.roleTag} ${styles[user.role]}`}>{translateRole(user.role)}</span>
+              <td data-label="Име" className={styles.name}>{user.fullname}</td>
+              <td data-label="Имейл" className={styles.email}>{user.email}</td>
+              <td data-label="Роля">
+                <span className={`tag ${styles.roleTag} ${styles[user.role] || ""}`}>{translateRole(user.role)}</span>
               </td>
-              <td>
-                <button onClick={() => handleEdit(user)} className={styles.editButton}>
-                  <FaEdit />
+              <td data-label="Действия">
+                <div className="row-actions">
+                <button onClick={() => handleEdit(user)} className="btn btn--small" aria-label={`Редактирай ${user.fullname}`}>
+                  <FaEdit aria-hidden="true" /> Редактирай
                 </button>
-                <button onClick={() => handleDelete(user._id)} className={styles.deleteButton}>
-                  <FaTrash />
+                <button onClick={() => handleDelete(user._id)} className="btn btn--danger btn--small btn--icon" aria-label={`Изтрий ${user.fullname}`}>
+                  <FaTrash aria-hidden="true" />
                 </button>
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
+      )}
       {editingUser && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <h2>Редактиране на Потребител</h2>
-            <div className={styles.editUserPhoto}>
+        <div className="modal-backdrop">
+          <div className="modal" role="dialog" aria-modal="true" aria-labelledby="edit-user-title">
+            <div className={styles.modalHead}>
               {editingUser.photo ? (
                 <img
                   src={editingUser.photo || "/placeholder.svg"}
-                  alt={editingUser.fullname}
+                  alt=""
                   className={styles.editingUserPhoto}
                 />
               ) : (
                 <div className={styles.editingUserPhotoPlaceholder}>
-                  <FaUser />
+                  <FaUser aria-hidden="true" />
                 </div>
               )}
+              <h2 id="edit-user-title">Редактиране на потребител</h2>
             </div>
-            <input
-              type="text"
-              value={editingUser.fullname}
-              onChange={(e) => setEditingUser({ ...editingUser, fullname: e.target.value })}
-              placeholder="Име"
-            />
-            <input
-              type="email"
-              value={editingUser.email}
-              onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
-              placeholder="Имейл"
-            />
-            <select value={editingUser.role} onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}>
-              <option value="user">Потребител</option>
-              <option value="worker">Работник</option>
-              <option value="admin">Администратор</option>
-            </select>
-            <div className={styles.modalButtons}>
-              <button onClick={handleSave} className={styles.saveButton}>
+            <div className={styles.modalFields}>
+              <div className="field">
+                <label htmlFor="edit-user-name" className="field-label">Име</label>
+                <input
+                  id="edit-user-name"
+                  type="text"
+                  value={editingUser.fullname}
+                  onChange={(e) => setEditingUser({ ...editingUser, fullname: e.target.value })}
+                  autoFocus
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="edit-user-email" className="field-label">Имейл</label>
+                <input
+                  id="edit-user-email"
+                  type="email"
+                  value={editingUser.email}
+                  onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="edit-user-role" className="field-label">Роля</label>
+                <select id="edit-user-role" value={editingUser.role} onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}>
+                  <option value="user">Потребител</option>
+                  <option value="worker">Работник</option>
+                  <option value="admin">Администратор</option>
+                </select>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button onClick={handleSave} className="btn btn--primary">
                 Запази
               </button>
-              <button onClick={() => setEditingUser(null)} className={styles.cancelButton}>
+              <button onClick={() => setEditingUser(null)} className="btn btn--ghost">
                 Откажи промени
               </button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Back button */}
-      <button className={styles.backButton} onClick={goBack} aria-label="Go back">
-        <FaArrowLeft />
-      </button>
     </div>
   )
 }

@@ -2,15 +2,18 @@ const UserSchema = require("../Schemas/UserSchema");
 const jwt = require("jsonwebtoken");
 
 async function gatherUserInfo(req, res, next) {
-  const accessToken = jwt.decode(req.cookies["accessToken"]);
-  console.log(req.cookies)
-  // if (false && accessToken.expire < Date.now())
-  //   return res.status(400).send("Token expired");
-  if (!accessToken?.uid) return res.status(400).send("Invalid token");
-  const fetchedUser = await UserSchema.findById(accessToken.uid);
-  req.user = fetchedUser;
-  console.log(req.user);
-  next();
+  const token = req.cookies?.accessToken;
+  if (!token) return res.status(401).json({ message: "Authentication required" });
+
+  try {
+    const { uid, version = 0 } = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const user = await UserSchema.findById(uid);
+    if (!user || (user.tokenVersion || 0) !== version) return res.status(401).json({ message: "Invalid token" });
+    req.user = user;
+    next();
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
 }
 
 module.exports = gatherUserInfo;

@@ -15,7 +15,7 @@ import {
   FaHourglassHalf,
   FaExclamationTriangle,
   FaHistory,
-  FaArrowLeft, // Added FaArrowLeft
+  FaArrowLeft,
 } from "react-icons/fa"
 
 const ManageWorkersPage = () => {
@@ -63,7 +63,7 @@ const ManageWorkersPage = () => {
         setWorkers(data)
       } catch (err) {
         console.error("Error fetching workers:", err)
-        setError("Failed to load workers. Please try again later.")
+        setError("Работниците не могат да бъдат заредени. Опитайте отново по-късно.")
       } finally {
         setLoading(false)
       }
@@ -87,7 +87,7 @@ const ManageWorkersPage = () => {
       setWorkerTasks(data)
     } catch (err) {
       console.error("Error fetching worker tasks:", err)
-      setError("Failed to load worker tasks. Please try again later.")
+      setError("Задачите не могат да бъдат заредени. Опитайте отново по-късно.")
     } finally {
       setTasksLoading(false)
     }
@@ -210,40 +210,53 @@ const ManageWorkersPage = () => {
     return text.substring(0, maxLength) + "..."
   }
 
-  if (loading) return <div className={styles.loading}>Зареждане...</div>
-  if (error && !workers.length) return <div className={styles.error}>{error}</div>
+  const back = (
+    <button className="back-link" onClick={goBack}>
+      <FaArrowLeft aria-hidden="true" /> Назад
+    </button>
+  )
+
+  if (loading) return <div className="page">{back}<p className="loader" role="status">Зареждане…</p></div>
+  if (error && !workers.length) return <div className="page">{back}<p className="notice notice--error" role="alert"><FaExclamationTriangle aria-hidden="true" /> {error}</p></div>
 
   return (
-    <div className={styles.manageWorkersContainer}>
-      <h2>Управление на Работници</h2>
+    <div className={`page ${styles.manageWorkersContainer}`}>
+      {back}
+      <header className="page-head">
+        <h1 className="page-title">Управление на работници</h1>
+        <p className="page-lede">Изберете работник, за да видите задачите му и да възложите нова.</p>
+      </header>
 
       <div className={styles.contentWrapper}>
         <div className={styles.workersList}>
-          <h3>
-            <FaUserTie /> Списък с Работници
-          </h3>
+          <h2 className={styles.panelTitle}>
+            <FaUserTie aria-hidden="true" /> Списък с работници
+          </h2>
           {workers.length === 0 ? (
-            <p className={styles.noWorkers}>Няма намерени работници</p>
+            <div className="state"><strong>Няма намерени работници</strong><span>Задайте роля „Работник“ на потребител от „Управление на потребители“.</span></div>
           ) : (
             <ul>
               {workers.map((worker) => (
-                <li
-                  key={worker._id}
-                  className={`${styles.workerItem} ${selectedWorker?._id === worker._id ? styles.selected : ""}`}
-                  onClick={() => handleWorkerSelect(worker)}
-                >
+                <li key={worker._id}>
+                  <button
+                    type="button"
+                    className={`${styles.workerItem} ${selectedWorker?._id === worker._id ? styles.selected : ""}`}
+                    aria-pressed={selectedWorker?._id === worker._id}
+                    onClick={() => handleWorkerSelect(worker)}
+                  >
                   <div className={styles.workerAvatar}>
                     <img
                       src={worker.photo || "/placeholder.svg"}
-                      alt={worker.fullname}
+                      alt=""
                       className={styles.workerPhoto}
                     />
                   </div>
                   <div className={styles.workerInfo}>
                     <strong>{worker.fullname}</strong>
-                    <span>{worker.position}</span>
+                    {worker.position && <span>{worker.position}</span>}
                     <span className={styles.workerEmail}>{worker.email}</span>
                   </div>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -251,17 +264,17 @@ const ManageWorkersPage = () => {
 
           {selectedWorker && (
             <div className={styles.workerTasksContainer}>
-              <h4>
-                <FaHistory /> История на задачите
-              </h4>
+              <h3 className={styles.subTitle}>
+                <FaHistory aria-hidden="true" /> История на задачите
+              </h3>
 
               {tasksLoading ? (
-                <p className={styles.tasksLoading}>Зареждане на задачите...</p>
+                <p className="loader" role="status">Зареждане на задачите…</p>
               ) : workerTasks.length === 0 ? (
                 <p className={styles.noTasks}>Няма възложени задачи</p>
               ) : (
                 <div className={styles.tasksTableWrapper}>
-                  <table className={styles.tasksTable}>
+                  <table className={`data-table ${styles.tasksTable}`}>
                     <thead>
                       <tr>
                         <th>Задача</th>
@@ -290,20 +303,20 @@ const ManageWorkersPage = () => {
                               </div>
                             </td>
                             <td>
-                              <div className={styles.taskStatus}>
+                              <div className={`tag ${status === "completed" ? "tag--ok" : status === "overdue" ? "tag--bad" : "tag--pending"}`}>
                                 {status === "completed" ? (
                                   <>
-                                    <FaCheckCircle className={styles.statusIcon} />
+                                    <FaCheckCircle aria-hidden="true" />
                                     <span>Изпълнена</span>
                                   </>
                                 ) : status === "overdue" ? (
                                   <>
-                                    <FaExclamationTriangle className={styles.statusIcon} />
+                                    <FaExclamationTriangle aria-hidden="true" />
                                     <span>Просрочена</span>
                                   </>
                                 ) : (
                                   <>
-                                    <FaHourglassHalf className={styles.statusIcon} />
+                                    <FaHourglassHalf aria-hidden="true" />
                                     <span>В процес</span>
                                   </>
                                 )}
@@ -321,16 +334,16 @@ const ManageWorkersPage = () => {
         </div>
 
         <div className={styles.taskAssignment}>
-          <h3>
-            <FaClipboardList /> Възлагане на Задача
-          </h3>
+          <h2 className={styles.panelTitle}>
+            <FaClipboardList aria-hidden="true" /> Възлагане на задача
+          </h2>
 
           {selectedWorker ? (
             <div className={styles.selectedWorker}>
               <div className={styles.selectedWorkerContent}>
                 <img
                   src={selectedWorker.photo || "/placeholder.svg"}
-                  alt={selectedWorker.fullname}
+                  alt=""
                   className={styles.selectedWorkerPhoto}
                 />
                 <p>
@@ -343,8 +356,8 @@ const ManageWorkersPage = () => {
           )}
 
           <form onSubmit={handleSubmitTask} className={styles.taskForm}>
-            <div className={styles.formGroup}>
-              <label htmlFor="title">Заглавие на задачата:</label>
+            <div className={`field ${styles.formGroup}`}>
+              <label htmlFor="title" className="field-label">Заглавие на задачата</label>
               <input
                 type="text"
                 id="title"
@@ -356,8 +369,8 @@ const ManageWorkersPage = () => {
               />
             </div>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="description">Описание на задачата:</label>
+            <div className={`field ${styles.formGroup}`}>
+              <label htmlFor="description" className="field-label">Описание на задачата</label>
               <textarea
                 id="description"
                 name="description"
@@ -370,9 +383,9 @@ const ManageWorkersPage = () => {
             </div>
 
             <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label htmlFor="deadline">
-                  <FaCalendarAlt /> Краен срок (дата):
+              <div className={`field ${styles.formGroup}`}>
+                <label htmlFor="deadline" className="field-label">
+                  <FaCalendarAlt aria-hidden="true" /> Краен срок (дата)
                 </label>
                 <input
                   type="date"
@@ -385,9 +398,9 @@ const ManageWorkersPage = () => {
                 />
               </div>
 
-              <div className={styles.formGroup}>
-                <label htmlFor="deadlineTime">
-                  <FaClock /> Час:
+              <div className={`field ${styles.formGroup}`}>
+                <label htmlFor="deadlineTime" className="field-label">
+                  <FaClock aria-hidden="true" /> Час
                 </label>
                 <input
                   type="time"
@@ -400,20 +413,15 @@ const ManageWorkersPage = () => {
               </div>
             </div>
 
-            <button type="submit" className={styles.submitButton} disabled={!selectedWorker}>
-              <FaPaperPlane /> Възложи Задача
+            <button type="submit" className={`btn btn--primary ${styles.submitButton}`} disabled={!selectedWorker}>
+              <FaPaperPlane aria-hidden="true" /> Възложи задача
             </button>
           </form>
 
-          {error && <p className={styles.errorMessage}>{error}</p>}
-          {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
+          {error && <p className={`notice notice--error ${styles.formNotice}`} role="alert"><FaExclamationTriangle aria-hidden="true" /> {error}</p>}
+          {successMessage && <p className={`notice notice--success ${styles.formNotice}`} role="status"><FaCheckCircle aria-hidden="true" /> {successMessage}</p>}
         </div>
       </div>
-
-      {/* Back button */}
-      <button className={styles.backButton} onClick={goBack} aria-label="Go back">
-        <FaArrowLeft />
-      </button>
     </div>
   )
 }

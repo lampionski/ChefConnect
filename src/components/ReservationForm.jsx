@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import styles from "../pages/ReservationsPage.module.css"
-import { FaCalendarAlt, FaClock, FaUsers } from "react-icons/fa"
+import { FaCalendarAlt, FaClock, FaUsers, FaExclamationTriangle } from "react-icons/fa"
 import { API_BASE_URL } from '../api';
 
-export default function ReservationForm({ userId }) {
+export default function ReservationForm() {
   const [date, setDate] = useState("")
-  const [time, setTime] = useState("12:00") // Changed from hour to time
+  const [time, setTime] = useState("12:00")
   const [people, setPeople] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -19,7 +19,7 @@ export default function ReservationForm({ userId }) {
     // Set minimum date to 4 hours from now
     const now = new Date()
     now.setHours(now.getHours() + 4)
-    setMinDate(now.toISOString().split("T")[0])
+    setMinDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`)
   }, [])
 
   const validateForm = () => {
@@ -38,8 +38,8 @@ export default function ReservationForm({ userId }) {
     }
 
     // Validate reservation time (at least 4 hours from now)
-    const selectedDate = new Date(date)
     const [hours, minutes] = time.split(":").map(Number)
+    if (minutes !== 0) { setError("Резервациите са на кръгъл час"); return false }
     const selectedTime = new Date(date)
     selectedTime.setHours(hours, minutes, 0, 0)
 
@@ -53,7 +53,7 @@ export default function ReservationForm({ userId }) {
 
     // Validate number of people (between 1 and 20)
     const peopleNum = Number.parseInt(people, 10)
-    if (peopleNum < 1 || peopleNum > 20) {
+    if (!Number.isInteger(Number(people)) || peopleNum < 1 || peopleNum > 20) {
       setError("Броят на гостите трябва да бъде между 1 и 20")
       return false
     }
@@ -76,7 +76,6 @@ export default function ReservationForm({ userId }) {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId,
           date,
           startHour: hour,
           people: Number.parseInt(people, 10),
@@ -100,46 +99,57 @@ export default function ReservationForm({ userId }) {
 
   return (
     <>
-      <h2 className={styles.formTitle}>Запитване за Резервация</h2>
-      <div className={styles.formGroup}>
-        <label htmlFor="date">
-          <FaCalendarAlt className={styles.inputIcon} /> Дата:
-        </label>
-        <input type="date" id="date" value={date} onChange={(e) => setDate(e.target.value)} min={minDate} required />
+      <h2 className={styles.formTitle}>Запитване за резервация</h2>
+      <div className={styles.fieldGrid}>
+        <div className={`field ${styles.fieldDate}`}>
+          <label htmlFor="date" className="field-label">
+            <FaCalendarAlt aria-hidden="true" /> Дата
+          </label>
+          <input type="date" id="date" value={date} onChange={(e) => setDate(e.target.value)} min={minDate} required />
+        </div>
+        <div className="field">
+          <label htmlFor="time" className="field-label">
+            <FaClock aria-hidden="true" /> Час
+          </label>
+          <input
+            type="time"
+            id="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            min="10:00"
+            max="21:00"
+            step="3600"
+            required
+            aria-describedby="time-hint"
+          />
+          <span id="time-hint" className="field-hint">Кръгъл час, 10:00 – 21:00</span>
+        </div>
+        <div className="field">
+          <label htmlFor="people" className="field-label">
+            <FaUsers aria-hidden="true" /> Брой хора
+          </label>
+          <input
+            type="number"
+            id="people"
+            min="1"
+            max="20"
+            inputMode="numeric"
+            value={people}
+            onChange={(e) => setPeople(e.target.value)}
+            required
+            aria-describedby="people-hint"
+          />
+          <span id="people-hint" className="field-hint">От 1 до 20 души</span>
+        </div>
       </div>
-      <div className={styles.formGroup}>
-        <label htmlFor="time">
-          <FaClock className={styles.inputIcon} /> Час (10:00 - 21:00):
-        </label>
-        <input
-          type="time"
-          id="time"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          min="10:00"
-          max="21:00"
-          required
-        />
-      </div>
-      <div className={styles.formGroup}>
-        <label htmlFor="people">
-          <FaUsers className={styles.inputIcon} /> Брой хора (1-20):
-        </label>
-        <input
-          type="number"
-          id="people"
-          min="1"
-          max="20"
-          value={people}
-          onChange={(e) => setPeople(e.target.value)}
-          required
-        />
-      </div>
-      <button onClick={handleReservationRequest} className={styles.reserveButton} disabled={loading}>
-        {loading ? "Изпращане..." : "Изпратете запитване за резервация"}
+      {error && (
+        <p className={`notice notice--error ${styles.error}`} role="alert">
+          <FaExclamationTriangle aria-hidden="true" /> {error}
+        </p>
+      )}
+      <button onClick={handleReservationRequest} className={`btn btn--primary ${styles.reserveButton}`} disabled={loading}>
+        {loading ? "Изпращане…" : "Изпратете запитване за резервация"}
       </button>
-      {error && <p className={styles.error}>{error}</p>}
     </>
   )
 }
-

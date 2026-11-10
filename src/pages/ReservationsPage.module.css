@@ -1,154 +1,137 @@
-.container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  background-color: #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.info {
+  padding: var(--space-6);
+  background: var(--blue);
+  color: var(--on-blue);
+}
+
+.info :focus-visible {
+  outline-color: var(--paper);
+}
+
+.infoTitle {
+  color: var(--on-blue);
+  font-size: var(--step-3);
+  margin-bottom: var(--space-5);
+}
+
+.steps {
+  display: grid;
+  gap: var(--space-5);
+  counter-reset: step;
+  list-style: none;
+}
+
+.steps li {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr;
+  column-gap: var(--space-3);
+  counter-increment: step;
+}
+
+.steps li::before {
+  content: counter(step);
+  grid-row: span 2;
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 900;
+  line-height: 0.9;
+  color: var(--on-blue-soft);
+}
+
+.steps strong {
+  font-family: var(--font-cond);
+  font-size: 1.15rem;
+}
+
+.steps span {
+  color: var(--on-blue-soft);
+  font-size: 0.975rem;
+}
+
+.phone {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgb(246 246 241 / 0.25);
+  color: var(--on-blue-soft);
+}
+
+.phone a {
+  color: var(--on-blue);
+  font-weight: 700;
 }
 
 .formContainer {
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 0 auto;
+  padding: var(--space-6);
+  background: #fff;
+  border: 2px solid var(--blue);
 }
 
 .formTitle {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333333;
-  font-size: 24px;
+  font-size: var(--step-2);
+  margin-bottom: var(--space-5);
 }
 
-.loginButton {
-  display: block;
-  width: 200px;
-  margin: 20px auto;
-  padding: 10px;
-  background-color: #ffa500;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
 }
 
-.loginButton:hover {
-  background-color: #ff8c00;
+.fieldGrid :global(.field + .field) {
+  margin-top: 0;
 }
 
-/* Styles for the ReservationForm component */
-.formGroup {
-  margin-bottom: 15px;
+.fieldDate {
+  grid-column: 1 / -1;
 }
 
-.formGroup label {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-  color: #333333;
-  font-weight: 500;
-  font-size: 16px;
-}
-
-.inputIcon {
-  margin-right: 8px;
-  color: #ffa500;
-}
-
-.formGroup input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.formGroup input:focus {
-  outline: none;
-  border-color: #ffa500;
-  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2);
+.error {
+  margin-top: var(--space-5);
 }
 
 .reserveButton {
   width: 100%;
-  padding: 12px;
-  background-color: #ffa500;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
+  min-height: 56px;
+  margin-top: var(--space-6);
+  font-size: 1.15rem;
 }
 
-.reserveButton:hover {
-  background-color: #ff8c00;
+.signedOut {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: start;
 }
 
-.reserveButton:disabled {
-  background-color: #ddd;
-  cursor: not-allowed;
+.signedOut .formTitle {
+  margin-bottom: 0;
 }
 
-.error {
-  color: #f44336;
-  margin-top: 10px;
-  font-size: 14px;
-  background-color: rgba(244, 67, 54, 0.1);
-  padding: 10px;
-  border-radius: 4px;
-  border-left: 4px solid #f44336;
+.signedOut p {
+  color: var(--blue-soft);
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 15px;
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
   }
-
   .formContainer {
-    padding: 15px;
-  }
-
-  .formTitle {
-    font-size: 20px;
-  }
-
-  .loginButton,
-  .reserveButton {
-    width: 100%;
-  }
-
-  .formGroup label {
-    font-size: 14px;
-  }
-
-  .formGroup input {
-    font-size: 14px;
-    padding: 8px;
+    order: -1;
   }
 }
 
 @media (max-width: 480px) {
+  .info,
   .formContainer {
-    padding: 10px;
+    padding: var(--space-5);
   }
-
-  .formTitle {
-    font-size: 18px;
-  }
-
-  .reserveButton {
-    font-size: 14px;
-    padding: 10px;
+  .fieldGrid {
+    grid-template-columns: 1fr;
   }
 }
-

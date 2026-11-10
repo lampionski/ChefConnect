@@ -2,30 +2,29 @@
   "name": "libraryserver",
   "version": "1.0.0",
   "description": "",
-  "main": "authServer.js",
+  "main": "AuthServer.js",
   "scripts": {
-    "start": "node AuthServer.js",  
-    "dev": "nodemon authServer.js", 
-    "build": "echo 'No build step for backend yet'", 
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node AuthServer.js",
+    "start:local": "MONGO_URI=mongodb://127.0.0.1:27017/chefconnect npx -y node@22 AuthServer.js",
+    "make-admin:local": "npx -y node@22 scripts/make-local-admin.js",
+    "dev": "nodemon AuthServer.js",
+    "build": "echo 'No build step for backend yet'",
+    "test": "node --test tests/*.test.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.1692.0",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.6",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.3",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^2.5.0",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
   }
 }
-
-
-

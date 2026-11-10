@@ -1,380 +1,166 @@
-:root {
-  --primary-color: #ffa500;
-  --secondary-color: #333333;
-  --background-color: #ffffff;
-  --text-color: #333333;
-  --hover-color: #ff8c00;
-  --success-color: #28a745;
-  --warning-color: #ffc107;
-  --danger-color: #dc3545;
-}
-
-.messagesContainer {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: var(--background-color);
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
-
-.messagesContainer h2 {
-  color: var(--secondary-color);
-  font-size: 2rem;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.loading,
-.error,
-.noMessages {
-  text-align: center;
-  margin-top: 20px;
-  color: var(--text-color);
-  font-size: 1.2rem;
-}
-
 .messageList {
-  list-style-type: none;
-  padding: 0;
+  display: grid;
+  gap: var(--space-5);
 }
 
 .messageItem {
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  background: #fff;
+  border: 2px solid var(--blue);
+  animation: fade-in 240ms ease-out both;
 }
 
-.messageItem:hover {
-  transform: translateY(-5px);
+.messageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--blue-line);
 }
 
 .userContainer {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
 .userContainer img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  flex: none;
+  width: 44px;
+  height: 44px;
   object-fit: cover;
-}
-
-.userInfo {
-  flex-grow: 1;
+  background: var(--paper-2);
 }
 
 .userName {
-  margin: 0;
-  font-weight: bold;
-  font-size: 1.2rem;
-  color: var(--secondary-color);
+  font-size: var(--step--1);
+  color: var(--blue-soft);
 }
 
 .messageTitle {
-  margin: 5px 0 0;
-  font-size: 1rem;
-  color: #666;
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--blue);
 }
 
-.messageContent {
-  font-size: 1.1rem;
-  line-height: 1.5;
-  margin-bottom: 20px;
-}
-
-.messageHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+.titleBad {
+  color: var(--red);
 }
 
 .dismissButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: #999;
-  transition: color 0.3s ease;
+  flex: none;
+  --btn-bd: var(--blue-line);
 }
 
-.dismissButton:hover {
-  color: var(--primary-color);
+.welcomeMessage,
+.messageContent,
+.additionalInfo {
+  max-width: var(--measure);
 }
 
-/* Reservation details styles */
-.reservationDetails {
-  margin-bottom: 20px;
+.additionalInfo {
+  margin-top: var(--space-4);
+  color: var(--blue-soft);
+  font-size: 0.975rem;
 }
 
-.welcomeMessage {
-  font-size: 1.1rem;
-  line-height: 1.5;
-  margin-bottom: 15px;
-  color: var(--text-color);
+.rejectedMessage {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--red-tint);
 }
 
-.reservationInfo {
-  background-color: rgba(255, 165, 0, 0.1);
-  border-left: 4px solid var(--primary-color);
-  padding: 15px;
-  border-radius: 4px;
-  margin-bottom: 15px;
+.rejectedMessage p + p {
+  margin-top: var(--space-2);
+}
+
+.rejectionIcon {
+  margin-top: 0.25em;
+  color: var(--red);
+}
+
+.rejectionTitle {
+  font-weight: 700;
+}
+
+.reservationInfo,
+.taskInfo {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: var(--space-4);
+  border-block: 1px solid var(--blue);
 }
 
 .infoItem {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
-.infoItem:last-child {
-  margin-bottom: 0;
+.infoItem + .infoItem {
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--blue-line);
 }
 
 .infoIcon {
-  color: var(--primary-color);
-  margin-right: 10px;
-  font-size: 1.2rem;
+  flex: none;
+  color: var(--blue-soft);
 }
 
-.infoItem span {
-  display: inline-block;
-}
-
-.additionalInfo {
-  font-style: italic;
-  color: #666;
-  margin-top: 15px;
-}
-
-.rejectedMessage {
-  background-color: rgba(255, 165, 0, 0.1);
-  border-left: 4px solid var(--primary-color);
-  padding: 15px;
-  border-radius: 4px;
-  margin-bottom: 15px;
+.taskActive,
+.taskOverdue {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 700;
 }
 
-.rejectionIcon {
-  color: var(--primary-color);
-  font-size: 1.5rem;
-  margin-right: 10px;
-  flex-shrink: 0;
+.taskActive {
+  color: var(--blue);
 }
 
-.rejectionTitle {
-  font-weight: bold;
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-  color: var(--primary-color);
+.taskOverdue {
+  padding: var(--space-3) var(--space-4);
+  background: var(--red-tint);
+  color: var(--red);
 }
 
-.rejectedMessage div {
-  flex: 1;
-}
-
-.rejectedMessage p {
-  margin-bottom: 10px;
-}
-
-.rejectedMessage p:last-child {
-  margin-bottom: 0;
-}
-
-.rejectedMessage p {
-  margin: 0;
-  color: #333;
-  font-size: 1.1rem;
-  line-height: 1.5;
+.taskDescription {
+  margin-top: var(--space-3);
+  padding: var(--space-4);
+  background: var(--paper);
+  white-space: pre-line;
 }
 
 .reservationActions,
 .taskActions {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
 }
 
-.reservationActions button,
-.taskActions button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: background-color 0.3s ease;
-}
-
-.cancelButton {
-  background-color: #f44336;
-  color: white;
-}
-
-.cancelButton:hover {
-  background-color: #d32f2f;
-}
-
-.contactButton {
-  background-color: var(--primary-color);
-  color: white;
-}
-
-.contactButton:hover {
-  background-color: var(--hover-color);
-}
-
-.completeButton {
-  background-color: var(--success-color);
-  color: white;
-}
-
-.completeButton:hover {
-  background-color: #218838;
-}
-
-/* Task details styles */
-.taskDetails {
-  margin-bottom: 20px;
-}
-
-.taskActive,
-.taskOverdue {
-  padding: 15px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: flex-start;
-}
-
-.taskActive {
-  background-color: rgba(40, 167, 69, 0.1);
-  border-left: 4px solid var(--success-color);
-}
-
-.taskOverdue {
-  background-color: rgba(255, 193, 7, 0.1);
-  border-left: 4px solid var(--warning-color);
-}
-
-.taskIcon {
-  font-size: 1.5rem;
-  margin-right: 10px;
-  flex-shrink: 0;
-}
-
-.taskActive .taskIcon {
-  color: var(--success-color);
-}
-
-.taskOverdue .taskIcon {
-  color: var(--warning-color);
-}
-
-.taskActive p,
-.taskOverdue p {
-  margin: 0;
-  color: #333;
-  font-size: 1.1rem;
-  line-height: 1.5;
-}
-
-.taskDescription {
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-  border: 1px solid #eee;
-}
-
-.taskDescription p {
-  margin: 0;
-  font-size: 1.1rem;
-  line-height: 1.5;
-  white-space: pre-line;
-}
-
-.taskInfo {
-  background-color: rgba(255, 165, 0, 0.1);
-  border-left: 4px solid var(--primary-color);
-  padding: 15px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-}
-
-@media (max-width: 768px) {
-  .messagesContainer {
-    padding: 15px;
+@media (max-width: 640px) {
+  .messageItem {
+    padding: var(--space-4) var(--space-4) var(--space-5);
   }
-
-  .messagesContainer h2 {
-    font-size: 1.8rem;
+  .reservationInfo,
+  .taskInfo {
+    grid-template-columns: 1fr;
   }
-
-  .userContainer img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .userName {
-    font-size: 1.1rem;
-  }
-
-  .messageTitle {
-    font-size: 0.9rem;
-  }
-
-  .messageContent,
-  .welcomeMessage,
-  .rejectedMessage p,
-  .taskActive p,
-  .taskOverdue p,
-  .taskDescription p {
-    font-size: 1rem;
-  }
-
-  .infoItem {
-    font-size: 0.9rem;
-  }
-
-  .reservationActions,
-  .taskActions {
-    flex-direction: column;
-  }
-
-  .reservationActions button,
-  .taskActions button {
-    width: 100%;
+  .infoItem + .infoItem {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--blue-line);
   }
 }
-
-@media (max-width: 480px) {
-  .messagesContainer {
-    padding: 10px;
-  }
-
-  .messagesContainer h2 {
-    font-size: 1.5rem;
-  }
-
-  .userContainer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .userInfo {
-    margin-top: 10px;
-  }
-}
-

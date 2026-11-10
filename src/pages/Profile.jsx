@@ -6,21 +6,26 @@ import styles from "./Profile.module.css"
 import UserCTX from "../context/UserContext"
 import { API_BASE_URL } from "../api"
 import Cropper from "react-easy-crop"
+import { useNavigate } from "react-router-dom"
+
+const emptyProfile = {
+  fullname: "",
+  email: "",
+  username: "",
+  birthDate: "",
+  photo: "",
+  address: "",
+  phoneNumber: "",
+}
 
 const Profile = () => {
-  const { user: contextUser } = useContext(UserCTX)
-  const [user, setUser] = useState({
-    fullname: "",
-    email: "",
-    username: "",
-    birthDate: "",
-    photo: "",
-    address: "",
-    phoneNumber: "",
-  })
+  const { user: contextUser, setUser: setContextUser } = useContext(UserCTX)
+  const navigate = useNavigate()
+  const [user, setUser] = useState(emptyProfile)
   const [isEditing, setIsEditing] = useState(false)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [newPassword, setNewPassword] = useState("")
+  const [currentPassword, setCurrentPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
 
   // Crop related states
@@ -37,22 +42,28 @@ const Profile = () => {
       })
       if (response.ok) {
         const userData = await response.json()
-        console.log(userData)
-        setUser(userData)
+        setUser({ ...emptyProfile, ...userData })
+      } else if (response.status === 401) {
+        setContextUser(null)
+        navigate("/signin", { replace: true })
       } else {
         throw new Error("Failed to fetch user data")
       }
     } catch (error) {
       console.error("Error fetching user data:", error)
       if (contextUser) {
-        setUser(contextUser)
+        setUser({ ...emptyProfile, ...contextUser })
       }
     }
-  }, [contextUser])
+  }, [contextUser, navigate, setContextUser])
 
   useEffect(() => {
+    if (!contextUser) {
+      navigate("/signin", { replace: true })
+      return
+    }
     fetchUserData()
-  }, [fetchUserData])
+  }, [contextUser, fetchUserData, navigate])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -66,6 +77,7 @@ const Profile = () => {
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0]
     if (file) {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 3 * 1024 * 1024) { alert("Изберете JPG, PNG или WebP до 3 MB"); return }
       const reader = new FileReader()
       reader.onloadend = () => {
         // Instead of directly setting the photo, we set the image source for cropping
@@ -94,12 +106,10 @@ const Profile = () => {
     const canvas = document.createElement("canvas")
     const ctx = canvas.getContext("2d")
 
-    const maxSize = Math.max(image.width, image.height)
-    const safeArea = 2 * ((maxSize / 2) * Math.sqrt(2))
-
     // Set canvas size to match the bounding box
-    canvas.width = pixelCrop.width
-    canvas.height = pixelCrop.height
+    const scale = Math.min(1, 512 / Math.max(pixelCrop.width, pixelCrop.height))
+    canvas.width = Math.round(pixelCrop.width * scale)
+    canvas.height = Math.round(pixelCrop.height * scale)
 
     // Draw the cropped image onto the canvas
     ctx.drawImage(
@@ -110,8 +120,8 @@ const Profile = () => {
       pixelCrop.height,
       0,
       0,
-      pixelCrop.width,
-      pixelCrop.height,
+      canvas.width,
+      canvas.height,
     )
 
     // Return as a data URL
@@ -150,12 +160,12 @@ const Profile = () => {
         credentials: "include",
       })
       if (response.ok) {
-        alert("Profile updated successfully")
+        alert("Профилът е обновен успешно")
         await fetchUserData() // Refresh user data after update
         setIsEditing(false)
       } else {
         const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to update profile")
+        throw new Error(errorData.message || "Неуспешно обновяване на профила")
       }
     } catch (error) {
       console.error("Error updating profile:", error)
@@ -166,11 +176,11 @@ const Profile = () => {
   const handlePasswordChange = async (e) => {
     e.preventDefault()
     if (newPassword !== confirmPassword) {
-      alert("Passwords don't match")
+      alert("Паролите не съвпадат")
       return
     }
-    if (newPassword.length < 8) {
-      alert("Password must be at least 8 characters long")
+    if (newPassword.length < 8 || newPassword.length > 128 || !/\d/.test(newPassword) || !/[!@#$%^&*]/.test(newPassword)) {
+      alert("Паролата трябва да има 8–128 символа, цифра и специален символ")
       return
     }
     try {
@@ -179,17 +189,20 @@ const Profile = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ newPassword }),
+        body: JSON.stringify({ currentPassword, newPassword }),
         credentials: "include",
       })
       if (response.ok) {
         setNewPassword("")
+        setCurrentPassword("")
         setConfirmPassword("")
         setShowPasswordModal(false)
-        alert("Password changed successfully")
+        setContextUser(null)
+        navigate("/signin", { replace: true })
+        alert("Паролата е сменена. Влезте отново.")
       } else {
         const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to change password")
+        throw new Error(errorData.message || "Неуспешна смяна на паролата")
       }
     } catch (error) {
       console.error("Error changing password:", error)
@@ -197,79 +210,86 @@ const Profile = () => {
     }
   }
 
+  const field = (id, label, input) => (
+    <div className="field">
+      <label htmlFor={id} className="field-label">{label}</label>
+      {input}
+    </div>
+  )
+
   return (
-    <div className={styles.profileContainer}>
-      <h1>Потребителски Профил</h1>
+    <div className="page">
+      <header className="page-head">
+        <h1 className="page-title">Потребителски профил</h1>
+        <p className="page-lede">
+          {isEditing ? "Редактирайте данните си и запазете промените." : "Вашите данни за контакт и резервации."}
+        </p>
+      </header>
       <div className={styles.profileContent}>
         <div className={styles.profilePhoto}>
-          <img src={user.photo || "/placeholder.svg"} alt="Profile" />
-          {isEditing && (
-            <label className={styles.uploadPhotoLabel}>
-              <FaCamera />
-              <input type="file" accept="image/*" onChange={handlePhotoUpload} />
-            </label>
-          )}
+          <div className={styles.photoFrame}>
+            <img src={user.photo || "/placeholder.svg"} alt={user.photo ? "Профилна снимка" : ""} />
+            {isEditing && (
+              <label className={styles.uploadPhotoLabel}>
+                <FaCamera aria-hidden="true" />
+                <span>Смени снимката</span>
+                <input type="file" accept="image/*" onChange={handlePhotoUpload} />
+              </label>
+            )}
+          </div>
+          <p className={styles.photoName}>{user.fullname}</p>
+          <p className={styles.photoMail}>{user.email}</p>
         </div>
         <form onSubmit={handleSubmit} className={styles.profileForm}>
-          <div className={styles.formGroup}>
-            <label>Име:</label>
-            <input type="text" name="fullname" value={user.fullname} disabled={true} />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Email:</label>
-            <input type="email" name="email" value={user.email} disabled={true} />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Прякор:</label>
-            <input
+          <div className={styles.grid}>
+            {field("profile-fullname", "Име", <input id="profile-fullname" type="text" name="fullname" value={user.fullname ?? ""} disabled={true} />)}
+            {field("profile-email", "Имейл", <input id="profile-email" type="email" name="email" value={user.email ?? ""} disabled={true} />)}
+            {field("profile-username", "Прякор", <input
+              id="profile-username"
               type="text"
               name="username"
-              value={user.username}
+              value={user.username ?? ""}
               onChange={handleInputChange}
               disabled={!isEditing}
               placeholder="Добавете прякор"
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Рожденна Дата:</label>
-            <input
+            />)}
+            {field("profile-birth", "Рождена дата", <input
+              id="profile-birth"
               type="date"
               name="birthDate"
-              value={user.birthDate}
+              value={user.birthDate ?? ""}
               onChange={handleInputChange}
               disabled={!isEditing}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label>адрес:</label>
-            <input
+            />)}
+            {field("profile-address", "Адрес", <input
+              id="profile-address"
               type="text"
               name="address"
-              value={user.address}
+              value={user.address ?? ""}
               onChange={handleInputChange}
               disabled={!isEditing}
               placeholder="Добавете адрес"
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Телефонен номер:</label>
-            <input
+              autoComplete="street-address"
+            />)}
+            {field("profile-phone", "Телефонен номер", <input
+              id="profile-phone"
               type="tel"
               name="phoneNumber"
-              value={user.phoneNumber}
+              value={user.phoneNumber ?? ""}
               onChange={handleInputChange}
               disabled={!isEditing}
-              placeholder="Enter your phone number"
-            />
+              placeholder="Добавете телефон"
+              autoComplete="tel"
+            />)}
           </div>
           <div className={styles.buttonGroup}>
             {isEditing ? (
-              <button className={styles.saveButton}>Запази промени</button>
+              <button className="btn btn--primary">Запази промени</button>
             ) : (
               <button
                 type="button"
                 onClick={(e) => (e.preventDefault(), setIsEditing(true))}
-                className={styles.editButton}
+                className="btn"
               >
                 Редактирай профила
               </button>
@@ -277,44 +297,54 @@ const Profile = () => {
             <button
               type="button"
               onClick={(e) => (e.preventDefault(), setShowPasswordModal(true))}
-              className={styles.changePasswordButton}
+              className="btn btn--ghost"
             >
-              <FaLock /> Редактирай парола
+              <FaLock aria-hidden="true" /> Смени паролата
             </button>
           </div>
         </form>
       </div>
 
       {showPasswordModal && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <h2>Промяна на парола</h2>
-            <form onSubmit={handlePasswordChange}>
-              <div className={styles.formGroup}>
-                <label>Нова парола:</label>
+        <div className="modal-backdrop">
+          <div className="modal" role="dialog" aria-modal="true" aria-labelledby="password-dialog-title">
+            <h2 id="password-dialog-title">Промяна на парола</h2>
+            <form onSubmit={handlePasswordChange} className={styles.modalForm}>
+              <div className="field">
+                <label htmlFor="pw-current" className="field-label">Текуща парола</label>
+                <input id="pw-current" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} autoComplete="current-password" required autoFocus />
+              </div>
+              <div className="field">
+                <label htmlFor="pw-new" className="field-label">Нова парола</label>
                 <input
+                  id="pw-new"
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   minLength="8"
+                  autoComplete="new-password"
+                  aria-describedby="pw-new-hint"
                   required
                 />
+                <span id="pw-new-hint" className="field-hint">8–128 символа, поне една цифра и един специален символ (!@#$%^&*)</span>
               </div>
-              <div className={styles.formGroup}>
-                <label>Потвърдете новата парола:</label>
+              <div className="field">
+                <label htmlFor="pw-confirm" className="field-label">Потвърдете новата парола</label>
                 <input
+                  id="pw-confirm"
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   minLength="8"
+                  autoComplete="new-password"
                   required
                 />
               </div>
-              <div className={styles.buttonGroup}>
-                <button type="submit" className={styles.changePasswordButton}>
+              <div className="modal-actions">
+                <button type="submit" className="btn btn--primary">
                   Промяна на парола
                 </button>
-                <button type="button" onClick={() => setShowPasswordModal(false)} className={styles.cancelButton}>
+                <button type="button" onClick={() => setShowPasswordModal(false)} className="btn btn--ghost">
                   Откажи
                 </button>
               </div>
@@ -325,12 +355,13 @@ const Profile = () => {
 
       {/* Image Cropper Modal */}
       {showCropModal && (
-        <div className={styles.cropModal}>
-          <div className={styles.cropContainer}>
+        <div className="modal-backdrop">
+          <div className={`modal ${styles.cropContainer}`} role="dialog" aria-modal="true" aria-labelledby="crop-dialog-title">
             <div className={styles.cropHeader}>
-              <h3>Редактирайте снимката</h3>
+              <h3 id="crop-dialog-title">Редактирайте снимката</h3>
               <button
-                className={styles.closeButton}
+                className="btn btn--ghost btn--icon"
+                aria-label="Затвори"
                 onClick={() => {
                   setShowCropModal(false)
                   setImageSrc(null)
@@ -352,20 +383,20 @@ const Profile = () => {
             </div>
             <div className={styles.cropControls}>
               <div className={styles.zoomControl}>
-                <label>Увеличение:</label>
+                <label htmlFor="crop-zoom" className="field-label">Увеличение</label>
                 <input
+                  id="crop-zoom"
                   type="range"
                   value={zoom}
                   min={1}
                   max={3}
                   step={0.1}
-                  aria-labelledby="Zoom"
                   onChange={(e) => setZoom(Number.parseFloat(e.target.value))}
                 />
               </div>
-              <div className={styles.cropActions}>
+              <div className="modal-actions">
                 <button
-                  className={styles.cancelCropButton}
+                  className="btn btn--ghost"
                   onClick={() => {
                     setShowCropModal(false)
                     setImageSrc(null)
@@ -373,8 +404,8 @@ const Profile = () => {
                 >
                   Откажи
                 </button>
-                <button className={styles.saveCropButton} onClick={handleSaveCroppedImage}>
-                  <FaCheck /> Запази
+                <button className="btn btn--primary" onClick={handleSaveCroppedImage}>
+                  <FaCheck aria-hidden="true" /> Запази
                 </button>
               </div>
             </div>

@@ -40,19 +40,12 @@ export default function Messages() {
         const data = await response.json()
         // Sort messages to show newest first (assuming messages have a createdAt field)
         // If there's no createdAt field, we'll reverse the array assuming newest are at the end
-        const sortedMessages = data
-          .sort((a, b) => {
-            if (a.createdAt && b.createdAt) {
-              return new Date(b.createdAt) - new Date(a.createdAt)
-            }
-            return 0 // Keep original order if no date field
-          })
-          .reverse() // Reverse the array to show newest first
+        const sortedMessages = data.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
 
         setMessages(sortedMessages)
       } catch (err) {
         console.error("Error fetching messages:", err)
-        setError("Failed to load messages. Please try again later.")
+        setError("Съобщенията не могат да бъдат заредени. Опитайте отново по-късно.")
       } finally {
         setLoading(false)
       }
@@ -64,7 +57,7 @@ export default function Messages() {
   const handleCancelReservation = async (reservationId) => {
     if (window.confirm("Сигурен ли сте, че искате да откажете резервацията?")) {
       try {
-        const response = await fetch(`${API_BASE_URL}user/reservations/${reservationId}/cancel`, {
+        const response = await fetch(`${API_BASE_URL}/user/reservations/${reservationId}/cancel`, {
           method: "PUT",
           credentials: "include",
         })
@@ -74,13 +67,15 @@ export default function Messages() {
         setMessages(messages.filter((msg) => msg.reservationId !== reservationId))
       } catch (err) {
         console.error("Error cancelling reservation:", err)
-        alert("Failed to cancel reservation. Please try again later.")
+        alert("Резервацията не може да бъде отказана. Опитайте отново по-късно.")
       }
     }
   }
 
-  const handleDismissMessage = (messageId) => {
-    setMessages(messages.filter((msg) => msg._id !== messageId))
+  const handleDismissMessage = async (messageId) => {
+    const response = await fetch(`${API_BASE_URL}/messages/${messageId}`, { method: "DELETE", credentials: "include" })
+    if (response.ok) setMessages((previous) => previous.filter((msg) => msg._id !== messageId))
+    else alert("Неуспешно изтриване на съобщението")
   }
 
   const handleCompleteTask = async (messageId) => {
@@ -98,7 +93,7 @@ export default function Messages() {
         setMessages(messages.map((msg) => (msg._id === messageId ? { ...msg, status: "completed" } : msg)))
       } catch (err) {
         console.error("Error completing task:", err)
-        alert("Failed to mark task as completed. Please try again later.")
+        alert("Задачата не може да бъде отбелязана като изпълнена. Опитайте отново по-късно.")
       }
     }
   }
@@ -205,14 +200,25 @@ export default function Messages() {
     return deadlineDate < now
   }
 
-  if (loading) return <div className={styles.loading}>Зареждане на съобщенията...</div>
-  if (error) return <div className={styles.error}>{error}</div>
+  const head = (
+    <header className="page-head">
+      <h1 className="page-title">Вашите съобщения</h1>
+      <p className="page-lede">Отговори на резервации и съобщения от ресторанта.</p>
+    </header>
+  )
+
+  if (loading) return <div className="page page--narrow">{head}<p className="loader" role="status">Зареждане на съобщенията…</p></div>
+  if (error) return <div className="page page--narrow">{head}<p className="notice notice--error" role="alert"><FaExclamationTriangle aria-hidden="true" /> {error}</p></div>
 
   return (
-    <div className={styles.messagesContainer}>
-      <h2>Вашите съобщения</h2>
+    <div className={`page page--narrow ${styles.messagesContainer}`}>
+      {head}
       {messages.length === 0 ? (
-        <p className={styles.noMessages}>Нямате съобщения.</p>
+        <div className="state">
+          <strong>Нямате съобщения.</strong>
+          <span>Тук ще получите отговор, когато изпратите запитване за резервация.</span>
+          <button type="button" className="btn btn--primary" onClick={() => navigate("/reservations")}>Запазете маса</button>
+        </div>
       ) : (
         <ul className={styles.messageList}>
           {messages.map((message) => {
@@ -234,10 +240,10 @@ export default function Messages() {
               <li key={message._id} className={styles.messageItem}>
                 <div className={styles.messageHeader}>
                   <div className={styles.userContainer}>
-                    <img src={message.sender?.photo || "/placeholder.svg"} alt={message.sender?.fullname} />
+                    <img src={message.sender?.photo || "/placeholder.svg"} alt="" />
                     <div className={styles.userInfo}>
-                      <p className={styles.userName}>{message.sender?.fullname}</p>
-                      <p className={styles.messageTitle}>
+                      <p className={styles.userName}>{message.sender?.fullname || "Администратор"}</p>
+                      <p className={`${styles.messageTitle} ${message.type === "reservation" ? (reservationDetails.status === "rejected" ? styles.titleBad : "") : ""}`}>
                         {message.type === "reservation"
                           ? reservationDetails.status === "rejected"
                             ? "Отказана резервация"
@@ -250,8 +256,8 @@ export default function Messages() {
                   </div>
                   <button
                     onClick={() => handleDismissMessage(message._id)}
-                    className={styles.dismissButton}
-                    aria-label="Dismiss message"
+                    className={`btn btn--ghost btn--icon ${styles.dismissButton}`}
+                    aria-label="Изтрий съобщението"
                   >
                     <FaTimes />
                   </button>
@@ -363,11 +369,11 @@ export default function Messages() {
                   <div className={styles.reservationActions}>
                     <button
                       onClick={() => handleCancelReservation(message.reservationId)}
-                      className={styles.cancelButton}
+                      className="btn btn--danger btn--small"
                     >
                       <FaTimesCircle /> Откажете резервация
                     </button>
-                    <button onClick={() => navigate("/contact")} className={styles.contactButton}>
+                    <button onClick={() => navigate("/contact")} className="btn btn--ghost btn--small">
                       <FaPhoneAlt /> Свържете се с нас
                     </button>
                   </div>
@@ -375,10 +381,10 @@ export default function Messages() {
 
                 {message.type === "task" && message.status !== "completed" && (
                   <div className={styles.taskActions}>
-                    <button onClick={() => handleCompleteTask(message._id)} className={styles.completeButton}>
+                    <button onClick={() => handleCompleteTask(message._id)} className="btn btn--primary btn--small">
                       <FaCheckCircle /> Маркирай като изпълнена
                     </button>
-                    <button onClick={() => navigate("/contact")} className={styles.contactButton}>
+                    <button onClick={() => navigate("/contact")} className="btn btn--ghost btn--small">
                       <FaPhoneAlt /> Свържете се с нас
                     </button>
                   </div>

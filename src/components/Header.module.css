@@ -1,336 +1,335 @@
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  background-color: #1b1921;
   position: fixed;
-  top: 0;
-  left: 0; /* Ensure it starts from the left edge */
-  width: 100%;
-  box-sizing: border-box; /* Include padding in width calculation */
-  z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  height: 70px; /* Set explicit height to match the original header */
+  inset: 0 0 auto;
+  z-index: 100;
+  background: var(--paper);
+  padding-bottom: 7px;
+  background-image: var(--rule);
+  background-position: bottom;
+  background-size: 100% 7px;
+  background-repeat: no-repeat;
 }
 
-.logoWithPhone {
+.bar {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: var(--space-5);
+  width: min(100% - 2 * var(--gutter), var(--page-max));
+  height: calc(var(--header-h) - 7px);
+  margin-inline: auto;
 }
 
-.logoLink {
-  display: flex;
+.brand {
+  display: inline-flex;
   align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--blue);
 }
 
-.logo {
-  height: 40px;
-  transition: transform 0.3s ease;
+.brandMark {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  background: var(--blue);
 }
 
-.logo:hover {
-  transform: scale(1.05);
+.brandMark::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 11px;
+  height: 11px;
+  background: var(--red);
+  mix-blend-mode: multiply;
 }
 
-.phoneNumber {
-  display: flex;
+.brandName {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.005em;
+}
+
+.phone {
+  display: inline-flex;
   align-items: center;
-  color: #fff;
-  font-size: 14px;
+  gap: 0.45rem;
+  font-family: var(--font-cond);
+  font-weight: 700;
+  font-size: 0.975rem;
+  color: var(--blue-soft);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
 }
 
-.phoneIcon {
-  font-size: 16px;
-  margin-right: 8px;
-  color: #ffa500;
+.phone svg {
+  font-size: 0.8em;
+}
+
+.phone:hover {
+  color: var(--blue);
 }
 
 .nav {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: var(--space-1);
+  margin-left: auto;
 }
 
-.nav a {
+.navLink {
+  position: relative;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-cond);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--blue);
   text-decoration: none;
-  color: #fff;
-  font-weight: 500;
-  transition: color 0.3s ease;
-  font-size: 16px;
 }
 
-.nav a:hover {
-  color: #ffa500;
+.navLink::after {
+  content: "";
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.2rem;
+  height: 3px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms var(--ease-out);
 }
 
-.languageToggle {
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: opacity 0.3s ease;
+.navLink:hover::after {
+  transform: scaleX(0.4);
 }
 
-.languageToggle:hover {
-  opacity: 0.8;
-  color: #ffa500;
+.navLinkActive::after,
+.navLinkActive:hover::after {
+  transform: scaleX(1);
+}
+
+.signUpButton {
+  margin-left: var(--space-3);
 }
 
 .userMenu {
   position: relative;
-  display: flex;
-  align-items: center;
+  margin-left: var(--space-3);
 }
 
-.menuIcon {
-  font-size: 24px;
-  color: #fff;
+.accountButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 40px;
+  padding: 0.3rem 0.75rem 0.3rem 0.4rem;
+  border: 2px solid var(--blue);
+  background: transparent;
+  color: var(--blue);
+  font-family: var(--font-cond);
+  font-weight: 700;
+  font-size: 1rem;
   cursor: pointer;
-  padding: 5px;
+  transition: background-color 160ms ease;
+}
+
+.accountButton > svg:first-child {
+  margin-left: 0.35rem;
+}
+
+.accountButton:hover {
+  background: var(--blue-tint);
+}
+
+.accountButton[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+.chevron {
+  font-size: 0.7em;
+  transition: transform 200ms var(--ease-out);
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
 }
 
 .dropdownMenu {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 10px);
   right: 0;
-  background-color: #2c2a33;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  width: 220px;
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  animation: fadeIn 0.3s ease-in-out;
+  min-width: 230px;
+  padding: var(--space-2) 0;
+  background: var(--blue);
+  box-shadow: 0 18px 40px -16px rgb(18 26 74 / 0.55);
+  transform-origin: top right;
+  animation: drop 180ms var(--ease-out);
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
 }
 
 .menuItem {
-  padding: 12px;
-  color: #fff;
-  text-decoration: none;
-  cursor: pointer;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  transition: background-color 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 10px;
-  position: relative;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.7rem 1.1rem;
+  border: 0;
+  background: none;
+  color: var(--on-blue);
+  font-family: var(--font-cond);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menuItem svg {
+  color: var(--on-blue-soft);
 }
 
 .menuItem:hover {
-  background-color: #3a3842;
+  background: rgb(255 255 255 / 0.1);
 }
 
 .signOut {
-  background-color: #ffa500;
-  border: none;
-  border-radius: 5px;
-  padding: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  color: #fff;
-  width: 100%;
-  text-align: left;
-}
-
-.signOut:hover {
-  background-color: #ffa500;
-}
-
-.signUpButton {
-  background-color: #ffa500;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 16px;
-  font-weight: bold;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-}
-
-.signUpButton:hover {
-  background-color: #ffa500;
+  margin-top: var(--space-2);
+  border-top: 1px solid rgb(246 246 241 / 0.25);
 }
 
 .mobileMenuToggle {
   display: none;
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 24px;
-  cursor: pointer;
-  margin-left: auto; /* Push to the right */
-  padding: 5px;
-  z-index: 1001; /* Ensure it's above other elements */
 }
 
-.unreadBadge {
-  background-color: #ff4d4f;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  position: absolute;
-  top: -5px;
-  right: -5px;
+.mobileAccount {
+  display: contents;
 }
 
-/* Mobile menu item styles */
-.mobileMenuItem {
-  width: 100%;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #fff;
-  text-decoration: none;
+@media (max-width: 960px) {
+  .phone span {
+    display: none;
+  }
+  .phone {
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+    border: 2px solid var(--blue-line);
+  }
 }
 
-.mobileMenuItem:hover {
-  color: #ffa500;
-}
-
-.mobileSignOut {
-  background: none;
-  border: none;
-  text-align: left;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  color: #ffa500;
-  width: 100%;
-}
-
-/* Mobile user menu styles */
-.mobileUserMenu {
-  width: 100%;
-  margin-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 10px;
-}
-
-.mobileUserMenuHeader {
-  color: #ffa500;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-  padding: 5px 0;
-  font-size: 16px;
-}
-
-/* Responsive styles */
 @media (max-width: 768px) {
-  .header {
-    padding: 15px 15px; /* Slightly reduce padding on mobile */
-    flex-wrap: wrap;
-    height: 60px; /* Smaller height on mobile */
+  .bar {
+    gap: var(--space-3);
   }
 
-  .logoWithPhone {
-    max-width: 70%; /* Limit width to ensure space for burger button */
-  }
-
-  .phoneNumber {
-    display: none; /* Hide phone number on very small screens */
+  .phone {
+    margin-left: auto;
   }
 
   .mobileMenuToggle {
-    display: block;
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: var(--blue);
+    color: var(--paper);
+    font-size: 1.15rem;
+    cursor: pointer;
   }
 
   .nav {
-    flex-direction: column;
-    align-items: flex-start;
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: var(--header-h);
     left: 0;
     right: 0;
-    background-color: #1b1921;
-    padding: 20px;
-    display: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    bottom: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    overflow-y: auto;
+    padding: var(--space-4) var(--gutter) var(--space-6);
+    background: var(--blue);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 200ms var(--ease-out),
+      transform 240ms var(--ease-out),
+      visibility 0s linear 240ms;
   }
 
   .navOpen {
-    display: flex;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 200ms var(--ease-out),
+      transform 240ms var(--ease-out),
+      visibility 0s;
   }
 
-  .nav a,
-  .languageToggle,
-  .signUpButton {
-    width: 100%;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  .navLink {
+    padding: 0.85rem 0;
+    border-bottom: 1px solid rgb(246 246 241 / 0.2);
+    color: var(--on-blue);
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+  }
+
+  .navLink::after {
+    left: 0;
+    right: auto;
+    width: 2.5rem;
+    bottom: 0.6rem;
+  }
+
+  .mobileAccount {
+    display: grid;
+    gap: 0;
+    margin-top: var(--space-5);
+  }
+
+  .mobileMenuItem {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 48px;
+    padding: 0.5rem 0;
+    border: 0;
+    background: none;
+    color: var(--on-blue);
+    font-family: var(--font-cond);
+    font-weight: 700;
+    font-size: 1.125rem;
+    text-decoration: none;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .mobileSignOut {
+    color: var(--on-blue-soft);
   }
 
   .userMenu {
-    display: none; /* Hide the desktop user menu on mobile */
-  }
-
-  .mobileUserMenu .menuItem {
-    padding: 10px 0;
-    margin-left: 15px; /* Add some indentation for user menu items */
-  }
-
-  .mobileUserMenu .signOut {
-    margin-left: 15px;
-    width: calc(100% - 15px);
+    display: none;
   }
 
   .signUpButton {
-    width: 100%;
-    text-align: center;
-    margin-top: 10px;
-  }
-
-  .signUpButton {
-    margin-top: 10px;
-    text-align: center;
+    margin: var(--space-5) 0 0;
+    min-height: 52px;
   }
 }
-
-@media (max-width: 480px) {
-  .logoWithPhone {
-    max-width: 60%; /* Further limit width on very small screens */
-  }
-
-  .logo {
-    height: 35px; /* Slightly smaller logo on very small screens */
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Add headerSpacer for fixed header */
-.headerSpacer {
-  height: 70px; /* Should match header height */
-}
-
-@media (max-width: 768px) {
-  .headerSpacer {
-    height: 60px; /* Adjust for mobile header height */
-  }
-}
-

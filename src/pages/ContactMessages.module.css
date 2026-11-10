@@ -1,0 +1,39 @@
+.list {
+  display: grid;
+  border-top: 3px solid var(--blue);
+}
+
+.item {
+  padding-block: var(--space-5);
+  border-bottom: 1px solid var(--blue-line);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+}
+
+.name {
+  font-family: var(--font-cond);
+  font-size: 1.2rem;
+  color: var(--blue);
+}
+
+.email {
+  font-size: 0.95rem;
+}
+
+.date {
+  margin-left: auto;
+  font-size: var(--step--1);
+  color: var(--blue-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.message {
+  max-width: var(--measure);
+  margin-top: var(--space-3);
+  white-space: pre-line;
+}

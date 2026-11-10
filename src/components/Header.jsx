@@ -1,19 +1,18 @@
 "use client"
 
 import { useState, useContext, useEffect } from "react"
-import { Link, useNavigate, useLocation } from "react-router-dom"
-import { FaPhoneAlt, FaBars, FaUserCog, FaSignOutAlt, FaEnvelope } from "react-icons/fa"
+import { Link, NavLink, useLocation } from "react-router-dom"
+import { FaPhoneAlt, FaBars, FaTimes, FaUserCog, FaSignOutAlt, FaEnvelope, FaUser, FaChevronDown } from "react-icons/fa"
 import { API_BASE_URL } from '../api';
 import UserCTX from "../context/UserContext"
 import styles from "./Header.module.css"
-import logo from "../assets/logo.png"
+
+const navClass = ({ isActive }) => (isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink)
 
 export default function Header() {
   const userData = useContext(UserCTX)
-  const navigate = useNavigate()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [unreadMessages, setUnreadMessages] = useState(0)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
 
   // Check if we're on mobile
@@ -30,132 +29,142 @@ export default function Header() {
     setMenuOpen(false)
   }, [location.pathname]) // Close menu when route changes
 
-  // useEffect(() => {
-  //   if (userData.user) {
-  //     const fetchUnreadMessages = async () => {
-  //       try {
-  //         const response = await fetch(`${API_BASE_URL}/unread-messages/${userData.user._id}`, {
-  //           credentials: "include",
-  //         })
-  //         if (response.ok) {
-  //           const data = await response.json()
-  //           setUnreadMessages(data.count)
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching unread messages:", error)
-  //       }
-  //     }
-  //     fetchUnreadMessages()
-  //   }
-  // }, [userData.user])
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e) => {
+      if (e.key === "Escape") setMenuOpen(false)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [menuOpen])
 
   const logout = async () => {
-    await fetch(`${API_BASE_URL}/logout`, { credentials: "include" })
-    userData.setUser(null)
-    navigate("/")
+    await fetch(`${API_BASE_URL}/logout`, { method: "POST", credentials: "include" })
+    window.location.replace("/")
   }
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen)
   }
 
+  const firstName = userData.user?.fullname?.split(" ")[0]
+
   return (
     <header className={styles.header}>
-      <div className={styles.logoWithPhone}>
-        <Link to="/" className={styles.logoLink}>
-          <img src={logo || "/placeholder.svg"} className={styles.logo} alt="logo" />
+      <div className={styles.bar}>
+        <Link to="/" className={styles.brand} aria-label="ChefConnect – начало">
+          <span className={styles.brandMark} aria-hidden="true" />
+          <span className={styles.brandName}>ChefConnect</span>
         </Link>
-        <div className={styles.phoneNumber}>
-          <FaPhoneAlt className={styles.phoneIcon} />
+
+        <a href="tel:+1234567890" className={styles.phone}>
+          <FaPhoneAlt aria-hidden="true" />
           <span>+123 456 7890</span>
-        </div>
-      </div>
+        </a>
 
-      <button className={styles.mobileMenuToggle} onClick={toggleMenu} aria-label="Toggle mobile menu">
-        <FaBars />
-      </button>
+        <button
+          className={styles.mobileMenuToggle}
+          onClick={toggleMenu}
+          aria-label={menuOpen ? "Затвори менюто" : "Отвори менюто"}
+          aria-expanded={isMobile ? menuOpen : undefined}
+          aria-controls="site-nav"
+        >
+          {menuOpen ? <FaTimes /> : <FaBars />}
+        </button>
 
-      <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`}>
-        <Link to="/" onClick={() => setMenuOpen(false)}>
-          Начало
-        </Link>
-        <Link to="/products" onClick={() => setMenuOpen(false)}>
-          Меню
-        </Link>
-        <Link to="/reservations" onClick={() => setMenuOpen(false)}>
-          Резервация
-        </Link>
-        <Link to="/contact" onClick={() => setMenuOpen(false)}>
-          Връзка с нас
-        </Link>
+        <nav id="site-nav" aria-label="Основна навигация" className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`}>
+          <NavLink to="/" end className={navClass} onClick={() => setMenuOpen(false)}>
+            Начало
+          </NavLink>
+          <NavLink to="/products" className={navClass} onClick={() => setMenuOpen(false)}>
+            Меню
+          </NavLink>
+          <NavLink to="/reservations" className={navClass} onClick={() => setMenuOpen(false)}>
+            Резервация
+          </NavLink>
+          <NavLink to="/contact" className={navClass} onClick={() => setMenuOpen(false)}>
+            Връзка с нас
+          </NavLink>
 
-        {userData.user ? (
-          <>
-            {/* For mobile: show user menu items directly in the main menu */}
-            {isMobile && userData.user.role === "admin" && (
-              <Link to="/adminPanel" className={styles.mobileMenuItem} onClick={() => setMenuOpen(false)}>
-                <FaUserCog /> Админ Панел
-              </Link>
-            )}
-
-            {isMobile && (
-              <>
-                <Link to="/profile" className={styles.mobileMenuItem} onClick={() => setMenuOpen(false)}>
-                  <FaUserCog /> Профил
-                </Link>
-                <Link to="/messages" className={styles.mobileMenuItem} onClick={() => setMenuOpen(false)}>
-                  <FaEnvelope /> Съобщения
-                  {unreadMessages > 0 && <span className={styles.unreadBadge}>{unreadMessages}</span>}
-                </Link>
-                <button
-                  onClick={() => {
-                    logout()
-                    setMenuOpen(false)
-                  }}
-                  className={`${styles.mobileMenuItem} ${styles.mobileSignOut}`}
-                >
-                  <FaSignOutAlt /> Излез от Профил
-                </button>
-              </>
-            )}
-
-            {/* For desktop: show the burger menu icon with dropdown */}
-            <div className={styles.userMenu}>
-              <FaBars onClick={toggleMenu} className={styles.menuIcon} />
-              {menuOpen && !isMobile && (
-                <div className={styles.dropdownMenu}>
+          {userData.user ? (
+            <>
+              {/* For mobile: show user menu items directly in the main menu */}
+              {isMobile && (
+                <div className={styles.mobileAccount}>
                   {userData.user.role === "admin" && (
-                    <Link to="/adminPanel" className={styles.menuItem} onClick={() => setMenuOpen(false)}>
-                      <FaUserCog /> Админ Панел
+                    <Link to="/adminPanel" className={styles.mobileMenuItem} onClick={() => setMenuOpen(false)}>
+                      <FaUserCog aria-hidden="true" /> Админ панел
                     </Link>
                   )}
-                  <Link to="/profile" className={styles.menuItem} onClick={() => setMenuOpen(false)}>
-                    <FaUserCog /> Профил
+                  <Link to="/profile" className={styles.mobileMenuItem} onClick={() => setMenuOpen(false)}>
+                    <FaUser aria-hidden="true" /> Профил
                   </Link>
-                  <Link to="/messages" className={styles.menuItem} onClick={() => setMenuOpen(false)}>
-                    <FaEnvelope /> Съобщения
-                    {unreadMessages > 0 && <span className={styles.unreadBadge}>{unreadMessages}</span>}
+                  <Link to="/messages" className={styles.mobileMenuItem} onClick={() => setMenuOpen(false)}>
+                    <FaEnvelope aria-hidden="true" /> Съобщения
                   </Link>
                   <button
                     onClick={() => {
                       logout()
                       setMenuOpen(false)
                     }}
-                    className={`${styles.menuItem} ${styles.signOut}`}
+                    className={`${styles.mobileMenuItem} ${styles.mobileSignOut}`}
                   >
-                    <FaSignOutAlt /> Излез от Профил
+                    <FaSignOutAlt aria-hidden="true" /> Излез от профила
                   </button>
                 </div>
               )}
-            </div>
-          </>
-        ) : (
-          <Link to="/signin" className={styles.signUpButton} onClick={() => setMenuOpen(false)}>
-            Вписване
-          </Link>
-        )}
-      </nav>
+
+              {/* For desktop: account button with dropdown */}
+              <div className={styles.userMenu}>
+                <button
+                  type="button"
+                  onClick={toggleMenu}
+                  className={styles.accountButton}
+                  aria-expanded={!isMobile ? menuOpen : undefined}
+                  aria-haspopup="true"
+                  aria-controls="account-menu"
+                >
+                  {userData.user.photo ? (
+                    <img src={userData.user.photo} alt="" className={styles.avatar} />
+                  ) : (
+                    <FaUser aria-hidden="true" />
+                  )}
+                  <span>{firstName || "Профил"}</span>
+                  <FaChevronDown aria-hidden="true" className={styles.chevron} />
+                </button>
+                {menuOpen && !isMobile && (
+                  <div className={styles.dropdownMenu} id="account-menu">
+                    {userData.user.role === "admin" && (
+                      <Link to="/adminPanel" className={styles.menuItem} onClick={() => setMenuOpen(false)}>
+                        <FaUserCog aria-hidden="true" /> Админ панел
+                      </Link>
+                    )}
+                    <Link to="/profile" className={styles.menuItem} onClick={() => setMenuOpen(false)}>
+                      <FaUser aria-hidden="true" /> Профил
+                    </Link>
+                    <Link to="/messages" className={styles.menuItem} onClick={() => setMenuOpen(false)}>
+                      <FaEnvelope aria-hidden="true" /> Съобщения
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout()
+                        setMenuOpen(false)
+                      }}
+                      className={`${styles.menuItem} ${styles.signOut}`}
+                    >
+                      <FaSignOutAlt aria-hidden="true" /> Излез от профила
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <Link to="/signin" className={`btn btn--primary btn--small ${styles.signUpButton}`} onClick={() => setMenuOpen(false)}>
+              Вписване
+            </Link>
+          )}
+        </nav>
+      </div>
     </header>
   )
 }
-

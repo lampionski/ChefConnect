@@ -1,9 +1,34 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
 import classes from "./ProductsPage.module.css"
-import { FaArrowUp } from "react-icons/fa"
-import { API_BASE_URL } from '../api';
+import { FaArrowUp, FaExclamationTriangle } from "react-icons/fa"
+import { API_BASE_URL, menuImageSrc } from '../api';
+
+function renderMenuRow(item) {
+  return (
+    <li key={item._id} className={classes.menuItem}>
+      <Link to={`/products/${item._id}`} className={classes.itemLink}>
+        <span className={classes.thumb}>
+          {item.image ? (
+            <img src={menuImageSrc(item.image)} alt="" className={classes.menuItemImage} loading="lazy" />
+          ) : (
+            <span className={classes.noImage} aria-hidden="true" />
+          )}
+        </span>
+        <span className={classes.itemText}>
+          <span className={classes.itemHead}>
+            <span className={classes.itemName}>{item.name}</span>
+            <span className={classes.leader} aria-hidden="true" />
+            <span className={classes.price}>{item.price} лв.</span>
+          </span>
+          {item.description && <span className={classes.description}>{item.description}</span>}
+        </span>
+      </Link>
+    </li>
+  )
+}
 
 export default function ProductsPage() {
   const [menuItems, setMenuItems] = useState([])
@@ -18,13 +43,13 @@ export default function ProductsPage() {
       try {
         const response = await fetch(`${API_BASE_URL}/get-menu${category ? `?category=${category}` : ""}`)
         if (!response.ok) {
-          throw new Error("Failed to fetch menu items.")
+          throw new Error("Менюто не може да бъде заредено в момента.")
         }
         const data = await response.json()
         setMenuItems(data)
         setLoading(false)
       } catch (err) {
-        setError(err.message)
+        setError(err.message === "Failed to fetch" ? "Няма връзка със сървъра. Опитайте отново след малко." : err.message)
         setLoading(false)
       }
     }
@@ -36,12 +61,12 @@ export default function ProductsPage() {
       try {
         const response = await fetch(`${API_BASE_URL}/get-categories`)
         if (!response.ok) {
-          throw new Error("Failed to fetch categories.")
+          throw new Error("Категориите не могат да бъдат заредени.")
         }
         const data = await response.json()
         setCategories(["Всички", ...data])
       } catch (err) {
-        setError(err.message)
+        setError(err.message === "Failed to fetch" ? "Няма връзка със сървъра. Опитайте отново след малко." : err.message)
       }
     }
     fetchCategories()
@@ -73,63 +98,75 @@ export default function ProductsPage() {
     return 0
   })
 
+  const header = (
+    <header className="page-head">
+      <h1 className="page-title">Меню</h1>
+      <p className="page-lede">Изберете категория или разгледайте цялото меню. Натиснете ястие, за да видите повече.</p>
+    </header>
+  )
+
   if (loading) {
-    return <p className={classes.loading}>Зарежда...</p>
+    return (
+      <div className="page">
+        {header}
+        <p className="loader" role="status">Зарежда менюто…</p>
+      </div>
+    )
   }
 
   if (error) {
-    return <p className={classes.error}>{error}</p>
+    return (
+      <div className="page">
+        {header}
+        <p className="notice notice--error" role="alert">
+          <FaExclamationTriangle aria-hidden="true" /> {error}
+        </p>
+      </div>
+    )
   }
 
   return (
-    <div className={classes.container}>
-      <h2>Меню</h2>
-      <div className={classes.filterContainer}>
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            className={`${classes.filterButton} ${
-              category === (cat === "Всички" ? "" : cat) ? classes.active : ""
-            } ${cat === "Всички" ? classes.defaultFilter : ""}`}
-            onClick={() => setCategory(cat === "Всички" ? "" : cat)}
-          >
-            {cat}
-          </button>
-        ))}
+    <div className={`page ${classes.container}`}>
+      {header}
+      <div className={classes.filterBar}>
+        <div className="chips" role="group" aria-label="Категории">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              className="chip"
+              aria-pressed={category === (cat === "Всички" ? "" : cat)}
+              onClick={() => setCategory(cat === "Всички" ? "" : cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
       {sortedMenuItems.length === 0 ? (
-        <p>Няма продукт в тази категория.</p>
+        <div className="state">
+          <strong>Няма продукт в тази категория.</strong>
+          <span>Изберете друга категория или вижте цялото меню.</span>
+        </div>
       ) : (
         <ul className={classes.menuList}>
           {category === "" ? (
-            categories.slice(1).map((cat) => (
-              <li key={cat} className={classes.categorySection}>
-                <h3 className={classes.categoryTitle}>{cat}</h3>
-                <ul className={classes.categoryItems}>
-                  {sortedMenuItems
-                    .filter((item) => item.category === cat)
-                    .map((item) => (
-                      <li key={item._id} className={classes.menuItem}>
-                        <img src={item.image || "/placeholder.svg"} alt={item.name} className={classes.menuItemImage} />
-                        <h4>{item.name}</h4>
-                        <p>{item.description}</p>
-                        <p>{item.price}лв</p>
-                      </li>
-                    ))}
-                </ul>
-              </li>
-            ))
+            categories.slice(1).map((cat) => {
+              const items = sortedMenuItems.filter((item) => item.category === cat)
+              if (items.length === 0) return null
+              return (
+                <li key={cat} className={classes.categorySection}>
+                  <h2 className={classes.categoryTitle}>{cat}</h2>
+                  <ul className={classes.categoryItems}>
+                    {items.map(renderMenuRow)}
+                  </ul>
+                </li>
+              )
+            })
           ) : (
             <li className={classes.categorySection}>
+              <h2 className={classes.categoryTitle}>{category}</h2>
               <ul className={classes.categoryItems}>
-                {sortedMenuItems.map((item) => (
-                  <li key={item._id} className={classes.menuItem}>
-                    <img src={item.image || "/placeholder.svg"} alt={item.name} className={classes.menuItemImage} />
-                    <h4>{item.name}</h4>
-                    <p>{item.description}</p>
-                    <p>{item.price}лв</p>
-                  </li>
-                ))}
+                {sortedMenuItems.map(renderMenuRow)}
               </ul>
             </li>
           )}
@@ -137,7 +174,7 @@ export default function ProductsPage() {
       )}
 
       {showScrollTop && (
-        <button className={classes.scrollTopButton} onClick={scrollToTop} aria-label="Scroll to top">
+        <button className="to-top" onClick={scrollToTop} aria-label="Нагоре към началото">
           <FaArrowUp />
         </button>
       )}

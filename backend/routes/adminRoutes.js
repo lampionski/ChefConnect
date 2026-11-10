@@ -5,10 +5,16 @@ const UserSchema = require("../Schemas/UserSchema")
 const gatherUserInfo = require("../Middlewares/gatherUserInfo")
 const Reservation = require("../Schemas/Reservation")
 const Message = require("../Schemas/Message")
-const systemId = "67ca90c3808cf1cb279bbeda"
+const ContactMessage = require("../Schemas/ContactMessage")
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 // Protect all routes in this router with admin check
 router.use(adminCheck)
+
+router.get("/contact-messages", async (req, res) => {
+  try { res.json(await ContactMessage.find().sort({ createdAt: -1 }).limit(200)) }
+  catch { res.status(500).json({ message: "Failed to load contact messages" }) }
+})
 
 // Get all users
 router.get("/users", gatherUserInfo, async (req, res) => {
@@ -26,6 +32,11 @@ router.put("/users/:id", async (req, res) => {
   try {
     const { id } = req.params
     const { fullname, email, role } = req.body
+    const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : ""
+    if (typeof fullname !== "string" || !fullname.trim() || fullname.length > 100 || !emailRegex.test(normalizedEmail) || normalizedEmail.length > 254 || !["user", "worker", "admin"].includes(role)) {
+      return res.status(400).json({ message: "Invalid user data" })
+    }
+    if (await UserSchema.exists({ email: normalizedEmail, _id: { $ne: id } }).collation({ locale: "en", strength: 2 })) return res.status(409).json({ message: "Email already in use" })
 
     // Don't allow changing own role (prevent admin from demoting themselves)
     if (req.user._id.toString() === id && req.user.role !== role) {
@@ -36,11 +47,11 @@ router.put("/users/:id", async (req, res) => {
     const updatedUser = await UserSchema.findByIdAndUpdate(
       id,
       {
-        fullname,
-        email,
+        fullname: fullname.trim(),
+        email: normalizedEmail,
         role,
       },
-      { new: true, select: "-password" },
+      { new: true, select: "-password", runValidators: true },
     )
 
     if (!updatedUser) {
@@ -50,7 +61,7 @@ router.put("/users/:id", async (req, res) => {
     res.json(updatedUser)
   } catch (error) {
     console.error("Error updating user:", error)
-    res.status(500).json({ message: "Error updating user" })
+    res.status(error.code === 11000 ? 409 : 500).json({ message: error.code === 11000 ? "Email already in use" : "Error updating user" })
   }
 })
 
@@ -64,11 +75,13 @@ router.delete("/users/:id", async (req, res) => {
       return res.status(403).json({ message: "Cannot delete your own account" })
     }
 
-    const deletedUser = await UserSchema.findByIdAndDelete(id)
-
-    if (!deletedUser) {
+    const existingUser = await UserSchema.findById(id)
+    if (!existingUser) {
       return res.status(404).json({ message: "User not found" })
     }
+    await Reservation.deleteMany({ userId: id })
+    await Message.deleteMany({ $or: [{ sender: id }, { receiver: id }] })
+    await UserSchema.findByIdAndDelete(id)
 
     res.json({ message: "User deleted successfully" })
   } catch (error) {
@@ -93,49 +106,31 @@ router.put("/reservations/:id", async (req, res) => {
   try {
     const { id } = req.params
     const { status } = req.body
+    if (!["confirmed", "cancelled"].includes(status)) return res.status(400).json({ message: "Invalid status" })
 
     const pad = (n) => (n >= 10 ? n.toString() : `0${n}`)
 
-    if (status === "cancelled") {
-      const deleted = await Reservation.findByIdAndDelete(id)
-
-      if (!deleted) {
-        return res.status(404).json({ message: "Reservation not deleted" })
-      }
-
-      const d = deleted.date
-
-      const message = new Message({
-        sender: systemId,
-        receiver: deleted.userId._id,
-        title: "Your reservation has been cancelled!",
-        content: `${deleted.people} People, Hour: ${deleted.startHour}:00, Date: ${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
-        type: "text",
-      })
-
-      await message.save()
-
-      return res.status(200).json({ ...deleted, status: "cancelled" })
-    }
-
-    const updatedReservation = await Reservation.findByIdAndUpdate(id, { status }, { new: true })
+    const allowedCurrentStatus = status === "confirmed" ? "pending" : { $in: ["pending", "confirmed"] }
+    const updatedReservation = await Reservation.findOneAndUpdate({ _id: id, status: allowedCurrentStatus }, { status }, { new: true, runValidators: true })
     if (!updatedReservation) {
-      return res.status(404).json({ message: "Reservation not found" })
+      const existing = await Reservation.findById(id)
+      return existing ? res.status(409).json({ message: "Reservation already processed", reservation: existing }) : res.status(404).json({ message: "Reservation not found" })
     }
 
-    if (status === "confirmed") {
+    if (status === "confirmed" || status === "cancelled") {
       const d = updatedReservation.date
 
       const message = new Message({
-        sender: systemId,
+        sender: req.user._id,
         receiver: updatedReservation.userId._id,
-        title: "Your reservation has been confirmed!",
+        title: status === "confirmed" ? "Your reservation has been confirmed!" : "Your reservation has been cancelled!",
         content: `${updatedReservation.people} People, Hour: ${updatedReservation.startHour}:00, Date: ${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
-        type: "reservation",
+        type: status === "confirmed" ? "reservation" : "text",
         reservationId: updatedReservation._id,
       })
 
       await message.save()
+      if (status === "cancelled") await Message.deleteMany({ receiver: updatedReservation.userId, reservationId: updatedReservation._id, type: "reservation" })
     }
 
     res.status(200).json(updatedReservation)
@@ -162,9 +157,11 @@ router.post("/assign-task", gatherUserInfo, async (req, res) => {
     const { workerId, title, description, deadline } = req.body
 
     // Validate required fields
-    if (!workerId || !title || !description || !deadline) {
+    if (!workerId || typeof title !== "string" || !title.trim() || typeof description !== "string" || !description.trim() || !deadline) {
       return res.status(400).json({ message: "All fields are required" })
     }
+    const deadlineDate = new Date(deadline)
+    if (!Number.isFinite(deadlineDate.getTime()) || deadlineDate <= new Date() || title.length > 120 || description.length > 2000) return res.status(400).json({ message: "Invalid task details" })
 
     // Check if worker exists
     const worker = await UserSchema.findOne({ _id: workerId, role: "worker" })
@@ -173,7 +170,6 @@ router.post("/assign-task", gatherUserInfo, async (req, res) => {
     }
 
     // Format deadline for display
-    const deadlineDate = new Date(deadline)
     const formattedDate = `${deadlineDate.getFullYear()}-${String(deadlineDate.getMonth() + 1).padStart(2, "0")}-${String(deadlineDate.getDate()).padStart(2, "0")}`
     const formattedTime = `${String(deadlineDate.getHours()).padStart(2, "0")}:${String(deadlineDate.getMinutes()).padStart(2, "0")}`
 

@@ -1,33 +1,46 @@
-/* Location.module.css */
 .location {
-    text-align: center;
-    padding: 50px 20px;
-    background-color: #f4f4f4;
+  background: var(--paper-2);
 }
 
-.location h2 {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 10px;
+.inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: var(--space-6);
+  align-items: end;
+  width: min(100% - 2 * var(--gutter), var(--page-max));
+  margin-inline: auto;
+  padding-block: var(--space-8);
 }
 
-.location p {
-    font-size: 1.2rem;
-    color: #555;
-    margin-bottom: 20px;
+.title {
+  font-size: var(--step-5);
+  line-height: 0.85;
 }
 
-.mapContainer {
-    width: 100%;
-    max-width: 900px; /* You can adjust this value */
-    height: 400px; /* Height of the map */
-    margin: 0 auto;
-    border-radius: 10px;
-    overflow: hidden;
+.address {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--blue);
 }
 
-iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
+.hours {
+  margin-top: var(--space-3);
+  font-weight: 600;
+  color: var(--blue-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+@media (max-width: 960px) {
+  .inner {
+    grid-template-columns: 1fr;
+  }
 }

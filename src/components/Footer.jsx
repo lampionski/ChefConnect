@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom"
 import styles from "./Footer.module.css"
-import { FaFacebookF, FaInstagram, FaTwitter, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaClock } from "react-icons/fa"
-import logo from "../assets/logo.png" 
+import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa"
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -9,11 +8,8 @@ const Footer = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.footerContent}>
-        <div className={styles.footerSection}>
-          <div className={styles.logoContainer}>
-            <img src={logo || "/placeholder.svg"} alt="ChefConnect Logo" className={styles.logo} />
-            <h3>ChefConnect</h3>
-          </div>
+        <div className={styles.brandBlock}>
+          <p className={styles.wordmark}>ChefConnect</p>
           <p className={styles.description}>
             Изживейте кулинарното съвършенство във всяка хапка. Нашият ресторант предлага изискана кухня в елегантна
             атмосфера.
@@ -31,8 +27,8 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className={styles.footerSection}>
-          <h4>Бързи Връзки</h4>
+        <nav className={styles.footerSection} aria-label="Бързи връзки">
+          <h2>Бързи връзки</h2>
           <ul className={styles.linkList}>
             <li>
               <Link to="/">Начало</Link>
@@ -47,44 +43,51 @@ const Footer = () => {
               <Link to="/contact">Връзка с нас</Link>
             </li>
           </ul>
+        </nav>
+
+        <div className={styles.footerSection}>
+          <h2>Контакти</h2>
+          <dl className={styles.contactList}>
+            <div>
+              <dt>Телефон</dt>
+              <dd>
+                <a href="tel:+1234567890">+123 456 7890</a>
+              </dd>
+            </div>
+            <div>
+              <dt>Имейл</dt>
+              <dd>
+                <a href="mailto:info@chefconnect.com">info@chefconnect.com</a>
+              </dd>
+            </div>
+            <div>
+              <dt>Адрес</dt>
+              <dd>бул. Княз Борис I 66, Варна</dd>
+            </div>
+          </dl>
         </div>
 
         <div className={styles.footerSection}>
-          <h4>Контакти</h4>
-          <ul className={styles.contactList}>
-            <li>
-              <FaPhoneAlt className={styles.contactIcon} />
-              <span>+123 456 7890</span>
-            </li>
-            <li>
-              <FaEnvelope className={styles.contactIcon} />
-              <span>info@chefconnect.com</span>
-            </li>
-            <li>
-              <FaMapMarkerAlt className={styles.contactIcon} />
-              <span>бул. Руски 11а, Пловдив, България</span>
-            </li>
-            <li>
-              <FaClock className={styles.contactIcon} />
-              <span>Пон-Пет: 10:00 - 22:00</span>
-            </li>
-            <li className={styles.noIcon}>
-              <span className={styles.indent}>Съб-Нед: 11:00 - 23:00</span>
-            </li>
-          </ul>
+          <h2>Работно време</h2>
+          <dl className={styles.hours}>
+            <div>
+              <dt>Пон – Пет</dt>
+              <dd>10:00 – 22:00</dd>
+            </div>
+            <div>
+              <dt>Съб – Нед</dt>
+              <dd>11:00 – 23:00</dd>
+            </div>
+          </dl>
         </div>
       </div>
 
       <div className={styles.footerBottom}>
-        <div className={styles.copyright}>&copy; {currentYear} ChefConnect. Всички права запазени.</div>
-        <div className={styles.legalLinks}>
-          <Link to="/privacy-policy">Политика за поверителност</Link>
-          <Link to="/terms-of-service">Общи условия</Link>
-        </div>
+        <span>&copy; {currentYear} ChefConnect. Всички права запазени.</span>
+        <span>Варна, България</span>
       </div>
     </footer>
   )
 }
 
 export default Footer
-
